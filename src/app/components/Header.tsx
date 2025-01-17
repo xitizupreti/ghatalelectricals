@@ -9,7 +9,10 @@ export default function Header() {
         </Link>
       </div>
       <nav className="flex space-x-4">
-        <Link href="/products" className="hover:text-blue-400">
+        <Link href="/" className="hover:text-blue-400">
+          Home
+        </Link>
+        <Link href="#products" className="hover:text-blue-400">
           Products
         </Link>
         <Link href="/about" className="hover:text-blue-400">

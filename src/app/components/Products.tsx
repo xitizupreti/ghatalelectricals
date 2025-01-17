@@ -1,4 +1,9 @@
+"use client";
+import { useCart } from "../cart/CartContext";
+import { useRouter } from "next/navigation";
 export default function Products() {
+  const { addToCart } = useCart();
+  const router = useRouter();
   const products = [
     {
       id: 1,
@@ -73,7 +78,10 @@ export default function Products() {
       image: "/images/product-12.jpg",
     },
   ];
-
+  const handleBuyNow = (product: any) => {
+    addToCart(product);
+    router.push("/cart");
+  };
   return (
     <section id="products" className="p-8">
       <h2 className="text-3xl font-bold text-center">Our Featured Products</h2>
@@ -87,6 +95,18 @@ export default function Products() {
             />
             <h3 className="mt-2 text-lg font-semibold">{product.name}</h3>
             <p>{product.price}</p>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 mt-2 rounded hover:bg-blue-600"
+              onClick={() => addToCart(product)}
+            >
+              Add to Cart
+            </button>
+            <button
+              className="bg-green-500 text-white px-4 py-2 mt-2 rounded hover:bg-green-600 ml-2"
+              onClick={() => handleBuyNow(product)}
+            >
+              Buy Now
+            </button>
           </div>
         ))}
       </div>

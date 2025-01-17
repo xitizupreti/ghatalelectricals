@@ -1,3 +1,4 @@
+import { CartProvider } from "./cart/CartContext";
 import Header from "./components/Header";
 import "./globals.css";
 
@@ -20,8 +21,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Header />
-        {children}
+        <CartProvider>
+          <Header />
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
