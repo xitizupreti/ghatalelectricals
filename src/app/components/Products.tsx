@@ -96,7 +96,7 @@ export default function Products() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
         {products.map((product) => (
           <div key={product.id} className="border p-4 text-center">
-            <div className="w-[400px] h-[300px] relative">
+            <div className="w-full h-[200px] relative overflow-hidden">
               <Image
                 src={product.image}
                 alt={product.name}

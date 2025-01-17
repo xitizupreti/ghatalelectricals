@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Header() {
   return (
-    <header className="flex items-center justify-between p-4 bg-gray-800 text-white">
+    <header className="fixed top-0 left-0 w-full flex items-center justify-between p-4 bg-gray-800 text-white shadow-md z-50">
       <div className="logo">
         <Link href="/">
           <Image src="/images/logo.png" alt="Logo" width={128} height={128} />
@@ -13,9 +13,9 @@ export default function Header() {
         <Link href="/" className="hover:text-blue-400">
           Home
         </Link>
-        <Link href="#products" className="hover:text-blue-400">
+        {/* <Link href="#products" className="hover:text-blue-400">
           Products
-        </Link>
+        </Link> */}
         <Link href="/about" className="hover:text-blue-400">
           About
         </Link>
