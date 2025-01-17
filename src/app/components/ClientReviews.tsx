@@ -12,8 +12,8 @@ export default function ClientReviews() {
         className="mx-auto rounded-full mt-4"
       />
       <p className="mt-4 italic">
-        "Affordable pricing, durable products, and exceptional customer support.
-        I'm a regular customer now!"
+        &quot;Affordable pricing, durable products, and exceptional customer
+        support. I&apos;m a regular customer now!&quot;
       </p>
       <h4 className="mt-2 font-semibold">Arun Thapa</h4>
       <p>Businessman</p>
