@@ -2,6 +2,13 @@
 import Image from "next/image";
 import { useCart } from "../cart/CartContext";
 import { useRouter } from "next/navigation";
+type Product = {
+  id: number;
+  name: string;
+  price: string;
+  image: string;
+};
+
 export default function Products() {
   const { addToCart } = useCart();
   const router = useRouter();
@@ -32,54 +39,54 @@ export default function Products() {
     },
     {
       id: 5,
-      name: "Plug",
+      name: "Switch Button",
       price: "Rs. 100 - Rs. 200",
       image: "/images/product-5.png",
     },
     {
       id: 6,
-      name: "Plug",
+      name: "Electric Wire",
       price: "Rs. 100 - Rs. 200",
       image: "/images/product-6.jpg",
     },
     {
       id: 7,
-      name: "Plug",
+      name: "Bulb",
       price: "Rs. 100 - Rs. 200",
       image: "/images/product-7.jpg",
     },
     {
       id: 8,
-      name: "Plug",
+      name: "Measuring Tape",
       price: "Rs. 100 - Rs. 200",
       image: "/images/product-8.jpg",
     },
     {
       id: 9,
-      name: "Plug",
+      name: "Fan",
       price: "Rs. 100 - Rs. 200",
       image: "/images/product-9.jpg",
     },
     {
       id: 10,
-      name: "Plug",
+      name: "Copper Magnet Wire",
       price: "Rs. 100 - Rs. 200",
       image: "/images/product-10.jpg",
     },
     {
       id: 11,
-      name: "Plug",
+      name: "Rice Cooker",
       price: "Rs. 100 - Rs. 200",
       image: "/images/product-11.png",
     },
     {
       id: 12,
-      name: "Plug",
+      name: "Steel Nail",
       price: "Rs. 100 - Rs. 200",
       image: "/images/product-12.jpg",
     },
   ];
-  const handleBuyNow = (product: any) => {
+  const handleBuyNow = (product: Product) => {
     addToCart(product);
     router.push("/cart");
   };
