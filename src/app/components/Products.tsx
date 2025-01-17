@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useCart } from "../cart/CartContext";
 import { useRouter } from "next/navigation";
 export default function Products() {
@@ -88,11 +89,14 @@ export default function Products() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
         {products.map((product) => (
           <div key={product.id} className="border p-4 text-center">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-48 object-cover"
-            />
+            <div className="w-[400px] h-[300px] relative">
+              <Image
+                src={product.image}
+                alt={product.name}
+                className="object-contain"
+                layout="fill"
+              />
+            </div>
             <h3 className="mt-2 text-lg font-semibold">{product.name}</h3>
             <p>{product.price}</p>
             <button

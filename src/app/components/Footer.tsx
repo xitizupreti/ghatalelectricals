@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Footer() {
   return (
     <footer className="bg-gray-800 text-white py-8">
@@ -5,7 +7,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Information */}
           <div>
-            <img src="/images/logo.png" alt="Logo" className="w-32 mb-4" />
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              width={128}
+              height={128}
+              className="mb-4"
+            />
             <p>Dadeldhura District, Mauroda</p>
             <p>Phone: 9848626549</p>
             <p>Email: abc@gmail.com</p>

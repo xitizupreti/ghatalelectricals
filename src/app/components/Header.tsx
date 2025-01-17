@@ -1,11 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Header() {
   return (
     <header className="flex items-center justify-between p-4 bg-gray-800 text-white">
       <div className="logo">
         <Link href="/">
-          <img src="/images/logo.png" alt="Logo" className="w-32" />
+          <Image src="/images/logo.png" alt="Logo" width={128} height={128} />
         </Link>
       </div>
       <nav className="flex space-x-4">

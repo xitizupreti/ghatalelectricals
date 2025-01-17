@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCart } from "./CartContext";
 
 export default function Cart() {
@@ -17,10 +18,12 @@ export default function Cart() {
               key={product.uniqueKey}
               className="flex items-center justify-between border p-4"
             >
-              <img
+              <Image
                 src={product.image}
                 alt={product.name}
-                className="w-16 h-16 object-cover"
+                width={64}
+                height={64}
+                className="object-cover"
               />
               <div>
                 <h3 className="font-semibold">{product.name}</h3>
