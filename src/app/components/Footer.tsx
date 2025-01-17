@@ -13,6 +13,7 @@ export default function Footer() {
               width={128}
               height={128}
               className="mb-4"
+              layout="intrinsic"
             />
             <p>Dadeldhura District, Mauroda</p>
             <p>Phone: 9848626549</p>

@@ -1,7 +1,9 @@
 "use client";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { useCart } from "../cart/CartContext";
 import { useRouter } from "next/navigation";
+
 type Product = {
   id: number;
   name: string;
@@ -12,6 +14,9 @@ type Product = {
 export default function Products() {
   const { addToCart } = useCart();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+
   const products = [
     {
       id: 1,
@@ -86,15 +91,26 @@ export default function Products() {
       image: "/images/product-12.jpg",
     },
   ];
+
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery)
+  );
+
   const handleBuyNow = (product: Product) => {
     addToCart(product);
     router.push("/cart");
   };
+
   return (
     <section id="products" className="p-8">
       <h2 className="text-3xl font-bold text-center">Our Featured Products</h2>
+      {searchQuery && (
+        <p className="text-center text-gray-500">
+          Showing results for: <strong>{searchQuery}</strong>
+        </p>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <div key={product.id} className="border p-4 text-center">
             <div className="w-full h-[200px] relative overflow-hidden">
               <Image
@@ -121,6 +137,9 @@ export default function Products() {
           </div>
         ))}
       </div>
+      {filteredProducts.length === 0 && (
+        <p className="text-center mt-4 text-gray-500">No products found.</p>
+      )}
     </section>
   );
 }
