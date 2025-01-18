@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "../cart/CartContext";
@@ -12,7 +13,7 @@ type Product = {
   quantity?: number;
 };
 
-export default function Products() {
+function ProductList() {
   const { addToCart } = useCart();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -99,11 +100,11 @@ export default function Products() {
   );
 
   const handleAddToCart = (product: Product, quantity: number) => {
-    addToCart(product, quantity); // Pass quantity
+    addToCart(product, quantity);
   };
 
   const handleBuyNow = (product: Product, quantity: number) => {
-    addToCart(product, quantity); // Add to cart first
+    addToCart(product, quantity);
     router.push("/cart");
   };
 
@@ -141,7 +142,7 @@ export default function Products() {
                 defaultValue={1}
                 min={1}
                 className="border rounded px-2 py-1 w-full"
-                onChange={(e) => (product.quantity = Number(e.target.value))} // Store quantity in product
+                onChange={(e) => (product.quantity = Number(e.target.value))}
               />
             </div>
             <button
@@ -163,5 +164,13 @@ export default function Products() {
         <p className="text-center mt-4 text-gray-500">No products found.</p>
       )}
     </section>
+  );
+}
+
+export default function Products() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductList />
+    </Suspense>
   );
 }
