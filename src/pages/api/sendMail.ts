@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Format the email content
     const productDetails = cart
       .map(
-        (item: any) =>
+        (item: { name: string; quantity: number; price: number }) =>
           `Product: ${item.name}, Quantity: ${item.quantity}, Price: ${item.price}`
       )
       .join("\n");
