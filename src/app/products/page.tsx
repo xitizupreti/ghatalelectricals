@@ -16,7 +16,7 @@ export default function Products() {
   const { addToCart } = useCart();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+  const searchQuery = searchParams?.get("search")?.toLowerCase() || "";
 
   const products = [
     {

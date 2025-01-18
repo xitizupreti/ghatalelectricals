@@ -11,7 +11,7 @@ export default function Cart() {
       updateQuantity(uniqueKey, quantity);
     }
   };
-
+  // console.log("Cart Data:", cart);
   return (
     <section className="p-8">
       <h2 className="text-3xl font-bold text-center">Your Cart</h2>

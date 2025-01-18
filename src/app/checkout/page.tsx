@@ -1,10 +1,13 @@
 "use client";
 import { useState, ChangeEvent, FormEvent } from "react";
+import { useCart } from "../cart/CartContext";
 import styles from "./Checkout.module.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function ShippingForm() {
+export default function CheckoutPage() {
+  const { cart } = useCart(); // Retrieve the cart from context
+
   const [data, setData] = useState({
     fullName: "",
     email: "",
@@ -18,7 +21,7 @@ export default function ShippingForm() {
     address: "",
     phone: "",
   });
-
+  const [loading, setLoading] = useState(false);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setData((prev) => ({
       ...prev,
@@ -47,28 +50,25 @@ export default function ShippingForm() {
       phone: "",
     };
 
-    // Full Name Validation
+    // Validation
     if (!data.fullName) {
       newErrors.fullName = "Full Name is required.";
       isValid = false;
       toast.error("Full Name is required.", { theme: "colored" });
     }
 
-    // Email Validation (optional)
     if (data.email && !validateEmail(data.email)) {
       newErrors.email = "Invalid email format.";
       isValid = false;
       toast.error("Invalid email format.", { theme: "colored" });
     }
 
-    // Shipping Address Validation
     if (!data.address) {
       newErrors.address = "Shipping Address is required.";
       isValid = false;
       toast.error("Shipping Address is required.", { theme: "colored" });
     }
 
-    // Phone Number Validation
     if (!data.phone) {
       newErrors.phone = "Phone Number is required.";
       isValid = false;
@@ -81,30 +81,43 @@ export default function ShippingForm() {
 
     setErrors(newErrors);
 
-    if (isValid) {
-      console.log("Form submitted:", data);
-      toast.success("Form submitted successfully!", { theme: "colored" });
+    if (isValid && cart.length > 0) {
+      setLoading(true);
+      try {
+        const response = await fetch("/api/sendMail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            formData: data,
+            cart,
+          }),
+        });
 
-      // Reset form
-      setData({
-        fullName: "",
-        email: "",
-        address: "",
-        phone: "",
-      });
+        if (response.ok) {
+          toast.success("Order placed successfully!", { theme: "colored" });
+          setData({
+            fullName: "",
+            email: "",
+            address: "",
+            phone: "",
+          });
+        } else {
+          const error = await response.json();
+          toast.error(error.message || "Failed to place order", {
+            theme: "colored",
+          });
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        toast.error("Failed to submit order. Please try again later.", {
+          theme: "colored",
+        });
+      } finally {
+        setLoading(false);
+      }
+    } else if (cart.length === 0) {
+      toast.error("Your cart is empty!", { theme: "colored" });
     }
-  };
-
-  const errorStyles = {
-    border: "1px solid rgba(234, 56, 31,1)",
-    backgroundImage: "url(/images/icon-error.svg)",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "95% 50%",
-  };
-
-  const normalStyles = {
-    border: "3px solid hsl(246, 25%, 77%)",
-    backgroundImage: "none",
   };
 
   return (
@@ -118,7 +131,7 @@ export default function ShippingForm() {
         value={data.fullName}
         onChange={handleChange}
         className={styles.input}
-        style={errors.fullName ? errorStyles : normalStyles}
+        style={errors.fullName ? { border: "1px solid red" } : {}}
         type="text"
         name="fullName"
         placeholder="Full Name"
@@ -129,7 +142,7 @@ export default function ShippingForm() {
         value={data.email}
         onChange={handleChange}
         className={styles.input}
-        style={errors.email ? errorStyles : normalStyles}
+        style={errors.email ? { border: "1px solid red" } : {}}
         type="text"
         name="email"
         placeholder="Email Address (optional)"
@@ -140,7 +153,7 @@ export default function ShippingForm() {
         value={data.address}
         onChange={handleChange}
         className={styles.input}
-        style={errors.address ? errorStyles : normalStyles}
+        style={errors.address ? { border: "1px solid red" } : {}}
         type="text"
         name="address"
         placeholder="Shipping Address"
@@ -151,16 +164,25 @@ export default function ShippingForm() {
         value={data.phone}
         onChange={handleChange}
         className={styles.input}
-        style={errors.phone ? errorStyles : normalStyles}
+        style={errors.phone ? { border: "1px solid red" } : {}}
         type="text"
         name="phone"
         placeholder="Phone Number"
       />
       <span style={{ color: "red" }}>{errors.phone}</span>
       <br />
-      <button className={`${styles.submit} ${styles.input}`} type="submit">
-        Submit
+      <button
+        className={`${styles.submit} ${styles.input}`}
+        type="submit"
+        disabled={loading}
+      >
+        {loading ? "Sending..." : "Submit"}
       </button>
+      {loading && (
+        <div className={styles.loading}>
+          <div className={styles.spinner}></div>
+        </div>
+      )}
       <ToastContainer />
     </form>
   );
