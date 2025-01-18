@@ -6,6 +6,8 @@ import {
   useState,
   ReactNode,
 } from "react";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type Product = {
   id: number;
@@ -14,13 +16,14 @@ type Product = {
   image: string;
 };
 
-type CartItem = Product & { uniqueKey: string };
+type CartItem = Product & { uniqueKey: string; quantity: number };
 
 type CartContextType = {
   cart: CartItem[];
-  addToCart: (product: Product) => void;
+  addToCart: (product: Product, quantity: number) => void;
   removeFromCart: (uniqueKey: string) => void;
   clearCart: () => void;
+  updateQuantity: (uniqueKey: string, quantity: number) => void;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -28,21 +31,60 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
+  // Load cart from localStorage on component mount
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCart(storedCart);
   }, []);
 
-  const addToCart = (product: Product) => {
-    const cartItem = { ...product, uniqueKey: `${product.id}-${Date.now()}` };
+  // Add a product to the cart
+  const addToCart = (product: Product, quantity: number) => {
+    toast.success(`${product.name}-${quantity} Successfully added to cart!`, {
+      position: "bottom-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
+    const cartItem = {
+      ...product,
+      uniqueKey: `${product.id}-${Date.now()}`,
+      quantity,
+    };
     setCart((prevCart) => {
-      const updatedCart = [...prevCart, cartItem];
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      let updatedCart;
+      if (existingItem) {
+        updatedCart = prevCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      } else {
+        updatedCart = [...prevCart, cartItem];
+      }
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       return updatedCart;
     });
   };
 
+  // Remove a product from the cart
   const removeFromCart = (uniqueKey: string) => {
+    toast.error("Removed from the Cart!", {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
     setCart((prevCart) => {
       const updatedCart = prevCart.filter(
         (item) => item.uniqueKey !== uniqueKey
@@ -52,15 +94,52 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  // Clear the entire cart
   const clearCart = () => {
-    setCart([]);
-    localStorage.removeItem("cart");
+    if (window.confirm("Are you sure you want to clear the cart?")) {
+      setCart([]);
+      localStorage.removeItem("cart");
+      toast.error(`Cart Cleared!`, {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+    }
+  };
+
+  // Update the quantity of a specific product in the cart
+  const updateQuantity = (uniqueKey: string, quantity: number) => {
+    toast.success(`Succesfully Updated to ${quantity}!`, {
+      position: "bottom-right",
+      autoClose: 500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
+    setCart((prevCart) => {
+      const updatedCart = prevCart.map((item) =>
+        item.uniqueKey === uniqueKey ? { ...item, quantity } : item
+      );
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      return updatedCart;
+    });
   };
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart }}
+      value={{ cart, addToCart, removeFromCart, clearCart, updateQuantity }}
     >
+      <ToastContainer />
       {children}
     </CartContext.Provider>
   );

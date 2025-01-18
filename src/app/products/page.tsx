@@ -9,6 +9,7 @@ type Product = {
   name: string;
   price: string;
   image: string;
+  quantity?: number;
 };
 
 export default function Products() {
@@ -23,6 +24,7 @@ export default function Products() {
       name: "Pliers",
       price: "Rs. 100 - Rs. 200",
       image: "/images/product-1.jpg",
+      quantity: 1,
     },
     {
       id: 2,
@@ -96,8 +98,12 @@ export default function Products() {
     product.name.toLowerCase().includes(searchQuery)
   );
 
-  const handleBuyNow = (product: Product) => {
-    addToCart(product);
+  const handleAddToCart = (product: Product, quantity: number) => {
+    addToCart(product, quantity); // Pass quantity
+  };
+
+  const handleBuyNow = (product: Product, quantity: number) => {
+    addToCart(product, quantity); // Add to cart first
     router.push("/cart");
   };
 
@@ -122,15 +128,31 @@ export default function Products() {
             </div>
             <h3 className="mt-2 text-lg font-semibold">{product.name}</h3>
             <p>{product.price}</p>
+            <div className="mt-2">
+              <label
+                htmlFor={`quantity-${product.id}`}
+                className="block text-sm"
+              >
+                Quantity
+              </label>
+              <input
+                id={`quantity-${product.id}`}
+                type="number"
+                defaultValue={1}
+                min={1}
+                className="border rounded px-2 py-1 w-full"
+                onChange={(e) => (product.quantity = Number(e.target.value))} // Store quantity in product
+              />
+            </div>
             <button
               className="bg-blue-500 text-white px-4 py-2 mt-2 rounded hover:bg-blue-600"
-              onClick={() => addToCart(product)}
+              onClick={() => handleAddToCart(product, product.quantity || 1)}
             >
               Add to Cart
             </button>
             <button
               className="bg-green-500 text-white px-4 py-2 mt-2 rounded hover:bg-green-600 ml-2"
-              onClick={() => handleBuyNow(product)}
+              onClick={() => handleBuyNow(product, product.quantity || 1)}
             >
               Buy Now
             </button>
