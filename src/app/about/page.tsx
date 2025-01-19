@@ -46,7 +46,7 @@ export default function AboutPage() {
           <h2 className="text-2xl font-semibold mb-4">Why Choose Us?</h2>
           <p className="text-lg">
             At Ghatal Electricals, we believe in building long-term
-            relationships with our customers. Here’s why we stand out:
+            relationships with our custome$Here’s why we stand out:
           </p>
           <ul className="list-disc list-inside text-lg space-y-2 mt-4">
             <li>Trusted expertise in the electrical industry.</li>

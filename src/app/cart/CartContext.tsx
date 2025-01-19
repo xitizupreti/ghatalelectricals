@@ -10,9 +10,9 @@ import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 type Product = {
-  id: number;
+  _id: string;
   name: string;
-  price: string;
+  price: number | string;
   image: string;
 };
 
@@ -31,17 +31,15 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  // Load cart from localStorage on component mount
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCart(storedCart);
   }, []);
 
-  // Add a product to the cart
   const addToCart = (product: Product, quantity: number) => {
-    toast.success(`${product.name}-${quantity} Successfully added to cart!`, {
+    toast.success(`${product.name} - ${quantity} Successfully added to cart!`, {
       position: "bottom-center",
-      autoClose: 5000,
+      autoClose: 2000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -52,15 +50,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
     const cartItem = {
       ...product,
-      uniqueKey: `${product.id}-${Date.now()}`,
+      uniqueKey: `${product._id}-${Date.now()}`,
       quantity,
+      price:
+        typeof product.price === "string"
+          ? parseFloat(product.price)
+          : product.price,
     };
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === product.id);
+      const existingItem = prevCart.find((item) => item._id === product._id);
       let updatedCart;
       if (existingItem) {
         updatedCart = prevCart.map((item) =>
-          item.id === product.id
+          item._id === product._id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
@@ -72,11 +74,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // Remove a product from the cart
   const removeFromCart = (uniqueKey: string) => {
     toast.error("Removed from the Cart!", {
       position: "bottom-right",
-      autoClose: 5000,
+      autoClose: 2000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -94,14 +95,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // Clear the entire cart
   const clearCart = () => {
     if (window.confirm("Are you sure you want to clear the cart?")) {
       setCart([]);
       localStorage.removeItem("cart");
       toast.error(`Cart Cleared!`, {
         position: "bottom-center",
-        autoClose: 5000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -113,9 +113,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Update the quantity of a specific product in the cart
   const updateQuantity = (uniqueKey: string, quantity: number) => {
-    toast.success(`Succesfully Updated to ${quantity}!`, {
+    toast.success(`Successfully Updated to ${quantity}!`, {
       position: "bottom-right",
       autoClose: 500,
       hideProgressBar: false,
@@ -144,6 +143,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     </CartContext.Provider>
   );
 };
+
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
