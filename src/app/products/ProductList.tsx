@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useCart } from "../cart/CartContext";
 import { useRouter } from "next/navigation";
 
@@ -9,7 +8,7 @@ type Product = {
   _id: string;
   name: string;
   price: number | string;
-  image: string;
+  image: string; // Contains Base64-encoded image data
   quantity: number;
 };
 
@@ -21,9 +20,6 @@ export default function ProductList({ products }: ProductListProps) {
   const { addToCart } = useCart();
   const router = useRouter();
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
-  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
-    {}
-  );
 
   const handleAddToCart = (product: Product) => {
     addToCart(product, quantities[product._id] || 1);
@@ -35,10 +31,6 @@ export default function ProductList({ products }: ProductListProps) {
 
   const handleQuantityChange = (productId: string, quantity: number) => {
     setQuantities((prev) => ({ ...prev, [productId]: quantity }));
-  };
-
-  const handleImageError = (productId: string) => {
-    setImageErrors((prev) => ({ ...prev, [productId]: true }));
   };
 
   const formatPrice = (price: number | string): string => {
@@ -61,18 +53,18 @@ export default function ProductList({ products }: ProductListProps) {
       {products.map((product) => (
         <div key={product._id} className="border p-4 text-center">
           <div className="w-full h-[200px] relative overflow-hidden">
-            {!imageErrors[product._id] ? (
-              <Image
-                src={product.image || "/placeholder.svg"}
+            {product.image ? (
+              <img
+                src={`${product.image}`}
                 alt={product.name}
-                className="object-contain"
-                fill
-                onError={() => handleImageError(product._id)}
+                className="object-contain w-full h-full"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
-                {product.name}
-              </div>
+              <img
+                src="/placeholder.png"
+                alt="Placeholder"
+                className="object-contain w-full h-full"
+              />
             )}
           </div>
           <h3 className="mt-2 text-lg font-semibold">{product.name}</h3>

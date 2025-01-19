@@ -44,7 +44,7 @@ export default function Cart() {
               className="flex items-center justify-between border p-4"
             >
               <Image
-                src={product.image || "/placeholder.svg"}
+                src={product.image || "/placeholder.png"}
                 alt={product.name}
                 width={64}
                 height={64}

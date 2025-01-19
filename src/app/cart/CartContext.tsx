@@ -56,7 +56,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         typeof product.price === "string"
           ? parseFloat(product.price)
           : product.price,
+      image: product.image, // Preserve Base64 image data
     };
+
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item._id === product._id);
       let updatedCart;
