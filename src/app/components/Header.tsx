@@ -42,6 +42,9 @@ export default function Header() {
           <Link href="/contact" className="hover:text-blue-400">
             Contact
           </Link>
+          <Link href="/admin" className="hover:text-blue-400 text-red-500">
+            Admin Login
+          </Link>
         </nav>
         <div className="hidden md:flex items-center space-x-4">
           <button
@@ -101,6 +104,13 @@ export default function Header() {
             onClick={() => setMenuOpen(false)}
           >
             Contact
+          </Link>
+          <Link
+            href="/admin"
+            className="hover:text-blue-400 text-red-500"
+            onClick={() => setMenuOpen(false)}
+          >
+            Admin Login
           </Link>
           <div className="flex space-x-4">
             <button

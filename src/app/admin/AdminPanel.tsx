@@ -13,6 +13,12 @@ export default function AdminPanel() {
   const [success, setSuccess] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const handleLogout = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 3); // Set expiration to 3 days from now
+    document.cookie = `authToken=; path=/; expires=${date.toUTCString()};`;
+    window.location.href = "/login";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,6 +185,12 @@ export default function AdminPanel() {
           {isUploading ? "Uploading..." : "Add Product"}
         </button>
       </form>
+      <button
+        onClick={handleLogout}
+        className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mt-4"
+      >
+        Logout
+      </button>
     </div>
   );
 }

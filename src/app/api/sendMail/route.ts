@@ -1,25 +1,22 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
-  }
-
-  const { formData, cart } = req.body;
-
-  // Ensure cart is defined and is an array
-  if (!cart || !Array.isArray(cart)) {
-    console.error("Invalid Cart Data:", cart);
-    return res.status(400).json({ message: "Cart data is missing or invalid" });
-  }
-
+// Handle POST requests
+export async function POST(request: Request) {
   try {
+    const { formData, cart } = await request.json();
+
+    // Validate cart data
+    if (!cart || !Array.isArray(cart)) {
+      console.error("Invalid Cart Data:", cart);
+      return NextResponse.json({ message: "Cart data is missing or invalid" }, { status: 400 });
+    }
+
     // Configure the transporter
     const transporter = nodemailer.createTransport({
-      service: "gmail", 
+      service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER, 
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
     });
@@ -36,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const adminMailOptions = {
       from: `"Ghatal Electronics" <${process.env.EMAIL_USER}>`, // Sender address
       to: process.env.RECEIVER_EMAIL, // Receiver address
-      subject: "New Order Received", 
+      subject: "New Order Received",
       text: `
         Order Details:
 
@@ -52,12 +49,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     await transporter.sendMail(adminMailOptions);
 
-    // If user email exists, send a confirmation email to them
+    // Send confirmation email to user if their email exists
     if (formData.email) {
       const userMailOptions = {
-        from: `"Ghatal Electronics" <${process.env.EMAIL_USER}>`, // Sender address
-        to: formData.email, // User's email
-        subject: "Order Confirmation", 
+        from: `"Ghatal Electronics" <${process.env.EMAIL_USER}>`,
+        to: formData.email,
+        subject: "Order Confirmation",
         text: `
           Dear ${formData.fullName},
 
@@ -79,9 +76,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await transporter.sendMail(userMailOptions);
     }
 
-    return res.status(200).json({ message: "Emails sent successfully" });
+    return NextResponse.json({ message: "Emails sent successfully" }, { status: 200 });
   } catch (error) {
     console.error("Error sending email:", error);
-    return res.status(500).json({ message: "Error sending email" });
+    return NextResponse.json({ message: "Error sending email" }, { status: 500 });
   }
 }
