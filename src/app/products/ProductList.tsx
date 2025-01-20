@@ -11,6 +11,7 @@ type Product = {
   price: number | string;
   image: string;
   quantity: number;
+  category: string;
 };
 
 interface ProductListProps {
@@ -59,14 +60,16 @@ export default function ProductList({ products }: ProductListProps) {
   };
 
   if (!products || products.length === 0) {
-    return <p className="text-center mt-4">No products found.</p>;
+    return (
+      <p className="text-center mt-4">No products found in this category.</p>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {products.map((product) => (
-        <div key={product._id} className="border p-4 text-center">
-          <div className="w-full h-[200px] relative overflow-hidden">
+        <div key={product._id} className="border p-4 rounded-lg shadow-md">
+          <div className="w-full h-48 relative mb-4">
             {!imageErrors[product._id] ? (
               <Image
                 src={product.image || "/placeholder.svg"}
@@ -84,12 +87,12 @@ export default function ProductList({ products }: ProductListProps) {
               />
             )}
           </div>
-          <h3 className="mt-2 text-lg font-semibold">{product.name}</h3>
-          <p>Rs. {formatPrice(product.price)}</p>
-          <div className="mt-2">
+          <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
+          <p className="text-gray-600 mb-2">Rs. {formatPrice(product.price)}</p>
+          <div className="mb-4">
             <label
               htmlFor={`quantity-${product._id}`}
-              className="block text-sm"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               Quantity
             </label>
@@ -99,30 +102,27 @@ export default function ProductList({ products }: ProductListProps) {
               defaultValue={1}
               min={1}
               max={product.quantity}
-              className="border rounded px-2 py-1 w-full"
+              className="w-full border rounded px-2 py-1"
               onChange={(e) =>
                 handleQuantityChange(product._id, Number(e.target.value))
               }
             />
           </div>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 mt-2 rounded hover:bg-blue-600"
-            onClick={() => handleAddToCart(product)}
-          >
-            Add to Cart
-          </button>
-          <button
-            disabled={loading}
-            className="bg-green-500 text-white px-4 py-2 mt-2 rounded hover:bg-green-600 ml-2"
-            onClick={() => handleBuyNow(product)}
-          >
-            {loading ? "Buying..." : "Buy Now"}
-          </button>
-          {loading && (
-            <div className="loading">
-              <div className="spinner"></div>
-            </div>
-          )}
+          <div className="flex space-x-2">
+            <button
+              className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              onClick={() => handleAddToCart(product)}
+            >
+              Add to Cart
+            </button>
+            <button
+              className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+              onClick={() => handleBuyNow(product)}
+              disabled={loading}
+            >
+              {loading ? "Processing..." : "Buy Now"}
+            </button>
+          </div>
         </div>
       ))}
     </div>

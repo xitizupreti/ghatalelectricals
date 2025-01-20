@@ -1,6 +1,20 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Define categories
+const categories = [
+  "Lights & Accessories",
+  "Power Tools",
+  "Hand Tools",
+  "Gardening Tools",
+  "Bathroom Hardware",
+  "General Hardware",
+  "Machinery",
+  "Automotive Accessories",
+];
 
 export default function AdminPanel() {
   const [formData, setFormData] = useState({
@@ -8,6 +22,7 @@ export default function AdminPanel() {
     price: "",
     image: "",
     quantity: 1,
+    category: "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -21,12 +36,18 @@ export default function AdminPanel() {
     date.setDate(date.getDate() + 3); // Set expiration to 3 days from now
     document.cookie = `authToken=; path=/; expires=${date.toUTCString()};`;
     window.location.href = "/login";
+    toast.warning("Logged Out", { theme: "colored" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    if (!formData.category) {
+      setError("Please select a category");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -35,25 +56,33 @@ export default function AdminPanel() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          price: parseFloat(formData.price),
-          quantity: parseInt(formData.quantity.toString(), 10),
+          price: Number.parseFloat(formData.price),
+          quantity: Number.parseInt(formData.quantity.toString(), 10),
         }),
       });
 
       if (response.ok) {
         const newProduct = await response.json();
-        console.log("Product added:", newProduct);
         setSuccess("Product added successfully!");
-        setFormData({ name: "", price: "", image: "", quantity: 1 });
+        toast.success("Product added successfully!", { theme: "colored" });
+        setFormData({
+          name: "",
+          price: "",
+          image: "",
+          quantity: 1,
+          category: "",
+        });
         setImagePreview(null);
       } else {
         const errorData = await response.json();
-        console.error("Error:", errorData);
         setError(errorData.error || "Failed to add product.");
+        toast.warning("Failed to add product.", { theme: "colored" });
       }
     } catch (err) {
-      console.error("Network error:", err);
       setError("Failed to connect to the server.");
+      toast.error("Failed to connect to the server.", {
+        theme: "colored",
+      });
     } finally {
       setLoading(false);
     }
@@ -63,7 +92,6 @@ export default function AdminPanel() {
     const file = e.target.files?.[0];
     if (file) {
       setIsUploading(true);
-      setError("");
       const formData = new FormData();
       formData.append("file", file);
 
@@ -79,13 +107,11 @@ export default function AdminPanel() {
           setImagePreview(URL.createObjectURL(file));
         } else {
           const errorData = await response.json();
-          console.error("Upload error:", errorData);
           setError(
             "Failed to upload image: " + (errorData.error || "Unknown error")
           );
         }
       } catch (error) {
-        console.error("Error uploading file:", error);
         setError("Failed to upload image: Network error");
       } finally {
         setIsUploading(false);
@@ -94,10 +120,12 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="border p-4 mt-8">
-      <h3 className="text-lg font-bold mb-4">Add New Product</h3>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      {success && <p className="text-green-500 mb-4">{success}</p>}
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md space-y-6">
+      <h3 className="text-2xl font-bold text-center">Add New Product</h3>
+
+      {error && <p className="text-red-500 text-center">{error}</p>}
+      {success && <p className="text-green-500 text-center">{success}</p>}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
@@ -111,7 +139,7 @@ export default function AdminPanel() {
             id="name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
           />
         </div>
@@ -129,10 +157,34 @@ export default function AdminPanel() {
             onChange={(e) =>
               setFormData({ ...formData, price: e.target.value })
             }
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
             step="0.01"
           />
+        </div>
+        <div>
+          <label
+            htmlFor="category"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Category
+          </label>
+          <select
+            id="category"
+            value={formData.category}
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
+            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            required
+          >
+            <option value="">Select a category</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label
@@ -146,17 +198,19 @@ export default function AdminPanel() {
             id="image"
             accept="image/*"
             onChange={handleFileChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
-          {isUploading && <p className="text-yellow-500 mt-2">Uploading...</p>}
+          {isUploading && (
+            <p className="text-yellow-500 mt-2 text-center">Uploading...</p>
+          )}
           {imagePreview && (
-            <div className="mt-2">
+            <div className="mt-4 flex justify-center">
               <Image
                 src={imagePreview || "/placeholder.svg"}
                 alt="Preview"
-                width={100}
-                height={100}
-                className="object-cover"
+                width={200}
+                height={200}
+                className="object-cover rounded-md shadow-sm"
               />
             </div>
           )}
@@ -175,39 +229,31 @@ export default function AdminPanel() {
             onChange={(e) =>
               setFormData({
                 ...formData,
-                quantity: parseInt(e.target.value, 10),
+                quantity: Number.parseInt(e.target.value, 10),
               })
             }
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
             min="1"
           />
         </div>
         <button
           type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          disabled={isUploading}
+          className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          disabled={isUploading || loading}
         >
           {isUploading ? "Uploading..." : "Add Product"}
         </button>
-        {isUploading && (
-          <div className="loading">
-            <div className="spinner"></div>
-          </div>
-        )}
+
+        <button
+          disabled={loading}
+          onClick={handleLogout}
+          className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mt-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {loading ? "Bye..." : "Log Out"}
+        </button>
+        <ToastContainer />
       </form>
-      <button
-        disabled={loading}
-        onClick={handleLogout}
-        className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mt-4"
-      >
-        {loading ? "Bye..." : "Log Out"}
-      </button>
-      {loading && (
-        <div className="loading">
-          <div className="spinner"></div>
-        </div>
-      )}
     </div>
   );
 }

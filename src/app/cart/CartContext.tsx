@@ -116,17 +116,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateQuantity = (uniqueKey: string, quantity: number) => {
-    toast.success(`Successfully Updated to ${quantity}!`, {
-      position: "bottom-right",
-      autoClose: 500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-      transition: Bounce,
-    });
     setCart((prevCart) => {
       const updatedCart = prevCart.map((item) =>
         item.uniqueKey === uniqueKey ? { ...item, quantity } : item

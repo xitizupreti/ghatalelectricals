@@ -36,14 +36,14 @@ export default function Header() {
           <Link href="/" className="hover:text-blue-400">
             Home
           </Link>
+          <Link href="/categories" className="hover:text-blue-400">
+            Categories
+          </Link>
           <Link href="/about" className="hover:text-blue-400">
             About
           </Link>
           <Link href="/contact" className="hover:text-blue-400">
             Contact
-          </Link>
-          <Link href="/admin" className="hover:text-blue-400 text-red-500">
-            Admin Login
           </Link>
         </nav>
         <div className="hidden md:flex items-center space-x-4">
@@ -55,6 +55,9 @@ export default function Header() {
           </button>
           <Link href="/cart">
             <i className="bx bx-cart text-3xl"></i>
+          </Link>
+          <Link href="/admin" className="hover:text-blue-400 text-red-500">
+            Admin Login
           </Link>
         </div>
       </div>
@@ -90,6 +93,13 @@ export default function Header() {
             onClick={() => setMenuOpen(false)}
           >
             Home
+          </Link>
+          <Link
+            href="/categories"
+            className="hover:text-blue-400"
+            onClick={() => setMenuOpen(false)}
+          >
+            Categories
           </Link>
           <Link
             href="/about"

@@ -46,14 +46,14 @@ export default function Cart() {
           {cart.map((product) => (
             <div
               key={product.uniqueKey}
-              className="flex items-center justify-between border p-4"
+              className="flex items-center justify-between border p-4 "
             >
               <Image
                 src={product.image || "/placeholder.png"}
                 alt={product.name}
                 width={64}
                 height={64}
-                className="object-cover"
+                className="object-cover mr-3"
               />
               <div>
                 <h3 className="font-semibold">{product.name}</h3>
@@ -71,6 +71,7 @@ export default function Cart() {
                     defaultValue={1}
                     min={1}
                     value={product.quantity}
+                    max={product.quantity || 100}
                     onChange={(e) =>
                       handleQuantityChange(
                         product.uniqueKey,
@@ -103,7 +104,7 @@ export default function Cart() {
                 Total: Rs. {formatPrice(calculateTotal())}
               </p>
             </div>
-            <div>
+            <div className="flex flex-col space-y-4 md:flex-row md:space-y-0">
               <button
                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mr-4"
                 onClick={clearCart}

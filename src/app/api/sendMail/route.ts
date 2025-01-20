@@ -9,7 +9,10 @@ export async function POST(request: Request) {
     // Validate cart data
     if (!cart || !Array.isArray(cart)) {
       console.error("Invalid Cart Data:", cart);
-      return NextResponse.json({ message: "Cart data is missing or invalid" }, { status: 400 });
+      return NextResponse.json(
+        { message: "Cart data is missing or invalid" },
+        { status: 400 }
+      );
     }
 
     // Configure the transporter
@@ -24,8 +27,19 @@ export async function POST(request: Request) {
     // Format the email content
     const productDetails = cart
       .map(
-        (item: { name: string; quantity: number; price: number }) =>
-          `Product: ${item.name}, Quantity: ${item.quantity}, Price: ${item.price}`
+        (item: {
+          name: string;
+          quantity: number;
+          price: number;
+          image: string;
+        }) =>
+          `         <div style="margin-bottom: 20px;">
+            <p><strong>Product:</strong> ${item.name}</p>
+            <p><strong>Quantity:</strong> ${item.quantity}</p>
+            <p><strong>Price:</strong> $${item.price}</p>
+            <img src="${item.image}" alt="${item.name}" style="width: 100px; height: auto; border: 1px solid #ddd; margin-top: 10px;" />
+          </div>
+        `
       )
       .join("\n");
 
@@ -76,9 +90,15 @@ export async function POST(request: Request) {
       await transporter.sendMail(userMailOptions);
     }
 
-    return NextResponse.json({ message: "Emails sent successfully" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Emails sent successfully" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error sending email:", error);
-    return NextResponse.json({ message: "Error sending email" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Error sending email" },
+      { status: 500 }
+    );
   }
 }

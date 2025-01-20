@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -16,6 +18,10 @@ export default function Login() {
 
     try {
       setLoading(true);
+      toast.success("Succesfull Login!", {
+        theme: "colored",
+      });
+
       const response = await fetch("/api/auth", {
         method: "POST",
         headers: {
@@ -30,10 +36,16 @@ export default function Login() {
         router.push("/admin");
       } else {
         setError("Invalid username or password");
+        toast.warning("Invalid username or password", {
+          theme: "colored",
+        });
       }
     } catch (error) {
       console.error("Login error:", error);
       setError("An error occurred during login");
+      toast.error("An error occurred during login", {
+        theme: "colored",
+      });
     } finally {
       setLoading(false);
     }
@@ -83,6 +95,7 @@ export default function Login() {
             <div className="spinner"></div>
           </div>
         )}
+        <ToastContainer />
       </form>
     </div>
   );
