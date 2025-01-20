@@ -179,8 +179,8 @@ export default function CheckoutPage() {
         {loading ? "Sending..." : "Submit"}
       </button>
       {loading && (
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
+        <div className="loading">
+          <div className="spinner"></div>
         </div>
       )}
       <ToastContainer />

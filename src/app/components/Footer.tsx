@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -15,27 +16,38 @@ export default function Footer() {
               className="mb-4"
               layout="intrinsic"
             />
-            <p>Dadeldhura District, Mauroda</p>
-            <p>Phone: 9848626549</p>
-            <p>Email: abc@gmail.com</p>
+            <p>Kathmandu</p>
+            <p>
+              <a href="tel:+9779868761319" className="text-blue-500 underline">
+                Phone: 9868761319
+              </a>
+            </p>
+            <p>
+              <a
+                href="mailto:ghatalelectricals@gmail.com"
+                className="text-blue-500 underline"
+              >
+                Email: ghatalelectricals@gmail.com
+              </a>
+            </p>
             <div className="flex space-x-4 mt-4">
-              <a href="#" aria-label="Facebook" className="text-xl">
+              <a
+                href="https://facebook.com/share/19umtroo9S"
+                aria-label="Facebook"
+                className="text-xl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="bx bxl-facebook"></i>
               </a>
-              <a href="#" aria-label="Twitter" className="text-xl">
-                <i className="bx bxl-twitter"></i>
-              </a>
-              <a href="#" aria-label="Instagram" className="text-xl">
-                <i className="bx bxl-instagram"></i>
-              </a>
-              <a href="#" aria-label="WhatsApp" className="text-xl">
+              <a
+                href="https://wa.me/9779868761319"
+                aria-label="WhatsApp"
+                className="text-xl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="bx bxl-whatsapp"></i>
-              </a>
-              <a href="#" aria-label="YouTube" className="text-xl">
-                <i className="bx bxl-youtube"></i>
-              </a>
-              <a href="#" aria-label="LinkedIn" className="text-xl">
-                <i className="bx bxl-linkedin"></i>
               </a>
             </div>
           </div>
@@ -45,29 +57,24 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4">Support</h4>
             <ul>
               <li>
-                <a href="#" className="hover:underline">
+                <Link href="/contact" className="hover:underline">
                   Contact Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:underline">
+                <Link href="/about" className="hover:underline">
                   About Page
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:underline">
-                  Size Guide
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
+                <Link href="/shopping-returns" className="hover:underline">
                   Shopping & Returns
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:underline">
+                <Link href="/privacy-policy" className="hover:underline">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -76,26 +83,10 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Shop</h4>
             <ul>
-              <li>
-                <a href="#" className="hover:underline">
-                  High-Quality Electronics
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Affordable Prices
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Fast Delivery
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Excellent Customer Support
-                </a>
-              </li>
+              <li>High-Quality Electronics</li>
+              <li>Affordable Prices</li>
+              <li>Fast Delivery</li>
+              <li>Excellent Customer Support</li>
             </ul>
           </div>
 
@@ -112,7 +103,10 @@ export default function Footer() {
                 placeholder="Enter your email"
                 className="w-full px-4 py-2 text-black rounded mb-4"
               />
-              <button className="bg-blue-600 px-4 py-2 rounded text-white hover:bg-blue-700">
+              <button
+                disabled
+                className="bg-blue-600 px-4 py-2 rounded text-white hover:bg-blue-700"
+              >
                 Subscribe
               </button>
             </form>
@@ -122,7 +116,15 @@ export default function Footer() {
         {/* Footer Bottom */}
         <div className="border-t border-gray-700 mt-8 pt-4 text-center">
           <p>
-            Copyright © 2024. All Rights Reserved. Designed By Bhawana Bhatt.
+            Copyright © {new Date().getFullYear()}. All Rights Reserved.
+            <br />
+            Designed & Developed By: BhawanaBhatt &{" "}
+            <a
+              href="https://kshitizupreti.com.np"
+              className="text-blue-500 hover:underline"
+            >
+              KshitizUpreti.
+            </a>
           </p>
         </div>
       </div>

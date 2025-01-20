@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import { useCart } from "./CartContext";
+import { useState } from "react";
 
 export default function Cart() {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
+  const [loading, setLoading] = useState(false);
 
   const handleQuantityChange = (uniqueKey: string, quantity: number) => {
     if (quantity > 0) {
@@ -30,7 +32,10 @@ export default function Cart() {
       return total + itemPrice * item.quantity;
     }, 0);
   };
-
+  const handleCheckout = () => {
+    setLoading(true);
+    window.location.href = "/checkout";
+  };
   return (
     <section className="p-8">
       <h2 className="text-3xl font-bold text-center">Your Cart</h2>
@@ -63,7 +68,8 @@ export default function Cart() {
                   <input
                     id={`quantity-${product.uniqueKey}`}
                     type="number"
-                    min="1"
+                    defaultValue={1}
+                    min={1}
                     value={product.quantity}
                     onChange={(e) =>
                       handleQuantityChange(
@@ -105,11 +111,17 @@ export default function Cart() {
                 Clear Cart
               </button>
               <button
+                disabled={loading}
                 className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
-                onClick={() => (window.location.href = "/checkout")}
+                onClick={handleCheckout}
               >
-                Checkout
+                {loading ? "Wait..." : "Checkout"}
               </button>
+              {loading && (
+                <div className="loading">
+                  <div className="spinner"></div>
+                </div>
+              )}
             </div>
           </div>
         </div>

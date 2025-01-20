@@ -8,3 +8,29 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f5f5f5;
 }
+
+/* Centered Loading Spinner */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1); /* Light gray */
+  border-left-color: hsl(154, 59%, 51%); /* Your theme color */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

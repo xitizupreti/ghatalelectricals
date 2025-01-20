@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useCart } from "../cart/CartContext";
 import { useRouter } from "next/navigation";
 
@@ -8,7 +9,7 @@ type Product = {
   _id: string;
   name: string;
   price: number | string;
-  image: string; // Contains Base64-encoded image data
+  image: string;
   quantity: number;
 };
 
@@ -17,15 +18,24 @@ interface ProductListProps {
 }
 
 export default function ProductList({ products }: ProductListProps) {
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
   const router = useRouter();
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const [loading, setLoading] = useState(false);
 
   const handleAddToCart = (product: Product) => {
     addToCart(product, quantities[product._id] || 1);
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = (product: Product) => {
+    setLoading(true);
+    const isInCart = cart.some((item) => item._id === product._id);
+    if (!isInCart) {
+      addToCart(product, quantities[product._id] || 1);
+    }
     router.push("/cart");
   };
 
@@ -33,12 +43,16 @@ export default function ProductList({ products }: ProductListProps) {
     setQuantities((prev) => ({ ...prev, [productId]: quantity }));
   };
 
+  const handleImageError = (productId: string) => {
+    setImageErrors((prev) => ({ ...prev, [productId]: true }));
+  };
+
   const formatPrice = (price: number | string): string => {
     if (typeof price === "number") {
       return price.toFixed(2);
     }
     if (typeof price === "string") {
-      const numPrice = parseFloat(price);
+      const numPrice = Number.parseFloat(price);
       return isNaN(numPrice) ? price : numPrice.toFixed(2);
     }
     return "0.00";
@@ -53,11 +67,13 @@ export default function ProductList({ products }: ProductListProps) {
       {products.map((product) => (
         <div key={product._id} className="border p-4 text-center">
           <div className="w-full h-[200px] relative overflow-hidden">
-            {product.image ? (
-              <img
-                src={`${product.image}`}
+            {!imageErrors[product._id] ? (
+              <Image
+                src={product.image || "/placeholder.svg"}
                 alt={product.name}
-                className="object-contain w-full h-full"
+                className="object-contain"
+                fill
+                onError={() => handleImageError(product._id)}
               />
             ) : (
               <img
@@ -95,11 +111,17 @@ export default function ProductList({ products }: ProductListProps) {
             Add to Cart
           </button>
           <button
+            disabled={loading}
             className="bg-green-500 text-white px-4 py-2 mt-2 rounded hover:bg-green-600 ml-2"
-            onClick={handleBuyNow}
+            onClick={() => handleBuyNow(product)}
           >
-            Buy Now
+            {loading ? "Buying..." : "Buy Now"}
           </button>
+          {loading && (
+            <div className="loading">
+              <div className="spinner"></div>
+            </div>
+          )}
         </div>
       ))}
     </div>
