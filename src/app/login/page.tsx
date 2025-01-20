@@ -12,8 +12,8 @@ export default function Login() {
     e.preventDefault();
 
     // Fetch credentials from environment variables
-    const adminUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
-    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPassword = process.env.ADMIN_PASSWORD;
 
     // Validate login
     if (username === adminUsername && password === adminPassword) {

@@ -1,7 +1,7 @@
 import ProductList from "./ProductList";
 
 async function getProducts() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, {
+  const res = await fetch(`${process.env.API_URL}/api/products`, {
     cache: "no-store",
   });
   if (!res.ok) {
