@@ -6,23 +6,36 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
-    // Fetch credentials from environment variables
-    const adminUsername = process.env.ADMIN_USERNAME;
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    try {
+      setLoading(true);
+      const response = await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-    // Validate login
-    if (username === adminUsername && password === adminPassword) {
-      const date = new Date();
-      date.setDate(date.getDate() + 3); // Expire in 3 days
-      document.cookie = `authToken=valid; path=/; expires=${date.toUTCString()};`;
-      router.push("/admin");
-    } else {
-      setError("Invalid username or password");
+      const data = await response.json();
+
+      if (data.success) {
+        router.push("/admin");
+      } else {
+        setError("Invalid username or password");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An error occurred during login");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,11 +72,17 @@ export default function Login() {
           />
         </div>
         <button
+          disabled={loading}
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
         >
-          Login
+          {loading ? "Welcome..." : "Login"}
         </button>
+        {loading && (
+          <div className="loading">
+            <div className="spinner"></div>
+          </div>
+        )}
       </form>
     </div>
   );

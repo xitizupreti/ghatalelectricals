@@ -13,7 +13,10 @@ export default function AdminPanel() {
   const [success, setSuccess] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const handleLogout = () => {
+    setLoading(true);
     const date = new Date();
     date.setDate(date.getDate() + 3); // Set expiration to 3 days from now
     document.cookie = `authToken=; path=/; expires=${date.toUTCString()};`;
@@ -26,6 +29,7 @@ export default function AdminPanel() {
     setSuccess("");
 
     try {
+      setLoading(true);
       const response = await fetch(`/api/products`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -50,6 +54,8 @@ export default function AdminPanel() {
     } catch (err) {
       console.error("Network error:", err);
       setError("Failed to connect to the server.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -184,13 +190,24 @@ export default function AdminPanel() {
         >
           {isUploading ? "Uploading..." : "Add Product"}
         </button>
+        {isUploading && (
+          <div className="loading">
+            <div className="spinner"></div>
+          </div>
+        )}
       </form>
       <button
+        disabled={loading}
         onClick={handleLogout}
         className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mt-4"
       >
-        Logout
+        {loading ? "Bye..." : "Log Out"}
       </button>
+      {loading && (
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      )}
     </div>
   );
 }

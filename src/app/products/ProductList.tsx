@@ -76,9 +76,10 @@ export default function ProductList({ products }: ProductListProps) {
                 onError={() => handleImageError(product._id)}
               />
             ) : (
-              <img
+              <Image
                 src="/placeholder.png"
                 alt="Placeholder"
+                fill
                 className="object-contain w-full h-full"
               />
             )}
