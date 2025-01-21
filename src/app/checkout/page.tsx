@@ -1,12 +1,14 @@
 "use client";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useCart } from "../cart/CartContext";
 import styles from "./Checkout.module.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
-  const { cart } = useCart(); // Retrieve the cart from context
+  const { cart, clearCart } = useCart();
+  const router = useRouter();
 
   const [data, setData] = useState({
     fullName: "",
@@ -30,7 +32,7 @@ export default function CheckoutPage() {
   };
 
   const validateEmail = (email: string) => {
-    const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
     return regex.test(email);
   };
 
@@ -95,12 +97,17 @@ export default function CheckoutPage() {
 
         if (response.ok) {
           toast.success("Order placed successfully!", { theme: "colored" });
+          clearCart(); // Clear the cart after successful order
           setData({
             fullName: "",
             email: "",
             address: "",
             phone: "",
           });
+          // Redirect to a thank you page or home page
+          setTimeout(() => {
+            router.push("/thank-you");
+          }, 2000);
         } else {
           const error = await response.json();
           toast.error(error.message || "Failed to place order", {

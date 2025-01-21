@@ -95,7 +95,7 @@ export default function ProductList({ products }: ProductListProps) {
                 />
               ) : (
                 <Image
-                  src="/placeholder.png"
+                  src="images/placeholder.png"
                   alt="Placeholder"
                   fill
                   className="object-contain w-full h-full"
