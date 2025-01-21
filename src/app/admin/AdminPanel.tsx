@@ -20,14 +20,13 @@ export default function AdminPanel() {
   const [formData, setFormData] = useState({
     name: "",
     price: "",
-    image: "",
+    image: null as File | null,
     quantity: 1,
     category: "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleLogout = () => {
@@ -44,37 +43,56 @@ export default function AdminPanel() {
     setError("");
     setSuccess("");
 
-    if (!formData.category) {
-      setError("Please select a category");
+    if (!formData.image) {
+      setError("Please select an image");
       return;
     }
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/products`, {
+
+      const imageFormData = new FormData();
+      imageFormData.append("image", formData.image);
+
+      // Upload image
+      const imageUploadResponse = await fetch("/api/upload", {
+        method: "POST",
+        body: imageFormData,
+      });
+
+      if (!imageUploadResponse.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const { imageUrl } = await imageUploadResponse.json();
+
+      // Create product
+      const productResponse = await fetch(`/api/products`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
+          name: formData.name,
           price: Number.parseFloat(formData.price),
+          image: imageUrl,
           quantity: Number.parseInt(formData.quantity.toString(), 10),
+          category: formData.category,
         }),
       });
 
-      if (response.ok) {
-        const newProduct = await response.json();
+      if (productResponse.ok) {
+        const newProduct = await productResponse.json();
         setSuccess("Product added successfully!");
         toast.success("Product added successfully!", { theme: "colored" });
         setFormData({
           name: "",
           price: "",
-          image: "",
+          image: null,
           quantity: 1,
           category: "",
         });
         setImagePreview(null);
       } else {
-        const errorData = await response.json();
+        const errorData = await productResponse.json();
         setError(errorData.error || "Failed to add product.");
         toast.warning("Failed to add product.", { theme: "colored" });
       }
@@ -88,34 +106,11 @@ export default function AdminPanel() {
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setIsUploading(true);
-      const formData = new FormData();
-      formData.append("file", file);
-
-      try {
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setFormData((prev) => ({ ...prev, image: data.filename }));
-          setImagePreview(URL.createObjectURL(file));
-        } else {
-          const errorData = await response.json();
-          setError(
-            "Failed to upload image: " + (errorData.error || "Unknown error")
-          );
-        }
-      } catch (error) {
-        setError("Failed to upload image: Network error");
-      } finally {
-        setIsUploading(false);
-      }
+      setFormData((prev) => ({ ...prev, image: file }));
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -176,7 +171,6 @@ export default function AdminPanel() {
               setFormData({ ...formData, category: e.target.value })
             }
             className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
           >
             <option value="">Select a category</option>
             {categories.map((category) => (
@@ -200,9 +194,6 @@ export default function AdminPanel() {
             onChange={handleFileChange}
             className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
-          {isUploading && (
-            <p className="text-yellow-500 mt-2 text-center">Uploading...</p>
-          )}
           {imagePreview && (
             <div className="mt-4 flex justify-center">
               <Image
@@ -237,12 +228,16 @@ export default function AdminPanel() {
             min="1"
           />
         </div>
+        {loading && (
+          <p className="text-yellow-500 mt-2 text-center">Uploading...</p>
+        )}
+
         <button
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-          disabled={isUploading || loading}
+          disabled={loading}
         >
-          {isUploading ? "Uploading..." : "Add Product"}
+          {loading ? "Adding..." : "Add Product"}
         </button>
 
         <button
@@ -250,7 +245,7 @@ export default function AdminPanel() {
           onClick={handleLogout}
           className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mt-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          {loading ? "Bye..." : "Log Out"}
+          Log Out
         </button>
         <ToastContainer />
       </form>

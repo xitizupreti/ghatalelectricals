@@ -8,17 +8,22 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { name, price, image, quantity, category } = body
 
-    if (!name || price === undefined || quantity === undefined || !category) {
-      return NextResponse.json({ error: "Name, price, quantity, and category are required." }, { status: 400 })
+    if (!name || price === undefined || quantity === undefined) {
+      return NextResponse.json({ error: "Name, price, and quantity are required." }, { status: 400 })
     }
 
-    const newProduct = new Product({
+    const productData: { name: any; price: number; image: any; quantity: number; category?: string } = {
       name,
       price: Number.parseFloat(price),
       image,
       quantity: Number.parseInt(quantity),
-      category,
-    })
+    }
+
+    if (category) {
+      productData.category = category
+    }
+
+    const newProduct = new Product(productData)
     await newProduct.save()
 
     return NextResponse.json(newProduct, { status: 201 })

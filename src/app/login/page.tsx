@@ -17,11 +17,6 @@ export default function Login() {
     setError("");
 
     try {
-      setLoading(true);
-      toast.success("Succesfull Login!", {
-        theme: "colored",
-      });
-
       const response = await fetch("/api/auth", {
         method: "POST",
         headers: {
@@ -34,6 +29,10 @@ export default function Login() {
 
       if (data.success) {
         router.push("/admin");
+        setLoading(true);
+        toast.success("Succesfull Login!", {
+          theme: "colored",
+        });
       } else {
         setError("Invalid username or password");
         toast.warning("Invalid username or password", {

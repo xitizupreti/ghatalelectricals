@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-// Handle POST requests
 export async function POST(request: Request) {
   try {
     const { formData, cart } = await request.json();
@@ -15,6 +14,15 @@ export async function POST(request: Request) {
       );
     }
 
+    // Calculate total price from the cart
+    const calculateTotal = (cart: any[]) => {
+      return cart.reduce(
+        (total, item) => total + (item.price || 0) * item.quantity,
+        0
+      );
+    };
+    const totalPrice = calculateTotal(cart);
+
     // Configure the transporter
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -24,40 +32,42 @@ export async function POST(request: Request) {
       },
     });
 
-    // Format the email content
-    const productDetails = cart
+    // Format the email content with HTML
+    console.log()
+    const productDetailsHTML = cart
       .map(
         (item: {
           name: string;
           quantity: number;
           price: number;
-          image: string;
-        }) =>
-          `         <div style="margin-bottom: 20px;">
-            <p><strong>Product:</strong> ${item.name}</p>
-            <p><strong>Quantity:</strong> ${item.quantity}</p>
-            <p><strong>Price:</strong> $${item.price}</p>
-            <img src="${item.image}" alt="${item.name}" style="width: 100px; height: auto; border: 1px solid #ddd; margin-top: 10px;" />
+          image: string; 
+        }) => {
+          console.log(item.image)
+          return `
+          <div>
+            <p>Product: ${item.name}</p>
+            <p>Quantity: ${item.quantity}</p>
+            <p>Price: ${item.price}</p>
+            <img src="https://ghatalelectricals.vercel.app/${item.image}" alt="${item.name}" style="max-width: 100px;"> 
           </div>
-        `
+        `}
       )
-      .join("\n");
+      .join("");
 
     // Send email to the store admin
     const adminMailOptions = {
       from: `"Ghatal Electronics" <${process.env.EMAIL_USER}>`, // Sender address
       to: process.env.RECEIVER_EMAIL, // Receiver address
       subject: "New Order Received",
-      text: `
-        Order Details:
-
-        Name: ${formData.fullName}
-        Email: ${formData.email || "N/A"}
-        Address: ${formData.address}
-        Phone: ${formData.phone}
-
-        Products:
-        ${productDetails}
+      html: `
+        <h3>Order Details:</h3>
+        <p><strong>Name:</strong> ${formData.fullName}</p>
+        <p><strong>Email:</strong> ${formData.email || "N/A"}</p>
+        <p><strong>Address:</strong> ${formData.address}</p>
+        <p><strong>Phone:</strong> ${formData.phone}</p>
+        <h4>Products:</h4>
+        ${productDetailsHTML}
+        <p><strong>Total Price:</strong> Rs. ${totalPrice.toFixed(2)}</p>
       `,
     };
 
@@ -69,21 +79,18 @@ export async function POST(request: Request) {
         from: `"Ghatal Electronics" <${process.env.EMAIL_USER}>`,
         to: formData.email,
         subject: "Order Confirmation",
-        text: `
-          Dear ${formData.fullName},
-
-          Thank you for your order! We have received the following details:
-
-          Address: ${formData.address}
-          Phone: ${formData.phone}
-
-          Your ordered products:
-          ${productDetails}
-
-          If you are not related to this email, please ignore it.
-
-          Thank you for shopping with us!
-          - Ghatal Electronics
+        html: `
+          <p>Dear ${formData.fullName},</p>
+          <p>Thank you for your order! We have received the following details:</p>
+          <p><strong>Address:</strong> ${formData.address}</p>
+          <p><strong>Phone:</strong> ${formData.phone}</p>
+          <h4>Your ordered products:</h4>
+          ${productDetailsHTML}
+          <p><strong>Total Price:</strong> Rs. ${totalPrice.toFixed(2)}</p>
+          <p>Your order will be processed shortly.</p>
+          <p>If you are not related to this email, please ignore it.</p>
+          <p>Thank you for shopping with us!</p>
+          <p>- Ghatal Electronics</p>
         `,
       };
 

@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useCart } from "./CartContext";
 import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Cart() {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
@@ -33,6 +35,12 @@ export default function Cart() {
     }, 0);
   };
   const handleCheckout = () => {
+    if (cart.some((product) => product.quantity > 10)) {
+      toast.warning("Please Check warnings above in the Cart Items.", {
+        theme: "colored",
+      });
+      return;
+    }
     setLoading(true);
     window.location.href = "/checkout";
   };
@@ -71,15 +79,18 @@ export default function Cart() {
                     defaultValue={1}
                     min={1}
                     value={product.quantity}
-                    max={product.quantity || 100}
-                    onChange={(e) =>
-                      handleQuantityChange(
-                        product.uniqueKey,
-                        parseInt(e.target.value, 10)
-                      )
-                    }
+                    onChange={(e) => {
+                      const value = Math.min(
+                        parseInt(e.target.value, 10),
+                        1000
+                      );
+                      handleQuantityChange(product.uniqueKey, value);
+                    }}
                     className="w-16 border rounded px-2 py-1"
                   />
+                  {product.quantity > 10 && (
+                    <p className="text-red-500 ml-2">Max 10 allowed</p>
+                  )}
                 </div>
               </div>
               <div>
@@ -111,6 +122,7 @@ export default function Cart() {
               >
                 Clear Cart
               </button>
+              <ToastContainer />
               <button
                 disabled={loading}
                 className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
