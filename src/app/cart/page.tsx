@@ -78,6 +78,7 @@ export default function Cart() {
                     type="number"
                     defaultValue={1}
                     min={1}
+                    step={1}
                     value={product.quantity}
                     onChange={(e) => {
                       const value = Math.min(
@@ -88,10 +89,10 @@ export default function Cart() {
                     }}
                     className="w-16 border rounded px-2 py-1"
                   />
-                  {product.quantity > 10 && (
-                    <p className="text-red-500 ml-2">Max 10 allowed</p>
-                  )}
                 </div>
+                {product.quantity > 10 && (
+                  <p className="text-red-500 ml-2">Max 10 allowed</p>
+                )}
               </div>
               <div>
                 <p className="font-semibold">

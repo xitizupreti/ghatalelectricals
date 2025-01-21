@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useCart } from "../cart/CartContext";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 9;
 
 type Product = {
   _id: string;
@@ -28,11 +28,15 @@ export default function ProductList({ products }: ProductListProps) {
 
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  const [imageLoading, setImageLoading] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const element = document.getElementById("products");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
   }, [currentPage]);
 
   const handleAddToCart = (product: Product) => {
@@ -48,14 +52,15 @@ export default function ProductList({ products }: ProductListProps) {
   };
 
   const handleQuantityChange = (productId: string, quantity: number) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [productId]: Math.max(1, Math.min(quantity, 10)),
-    }));
+    setQuantities((prev) => ({ ...prev, [productId]: quantity }));
   };
 
   const handleImageError = (productId: string) => {
     setImageErrors((prev) => ({ ...prev, [productId]: true }));
+  };
+
+  const handleImageLoading = (productId: string, isLoading: boolean) => {
+    setImageLoading((prev) => ({ ...prev, [productId]: isLoading }));
   };
 
   const formatPrice = (price: number | string): string => {
@@ -82,17 +87,28 @@ export default function ProductList({ products }: ProductListProps) {
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {currentItems.map((product) => (
           <div key={product._id} className="border p-4 rounded-lg shadow-md">
             <div className="w-full h-48 relative mb-4">
+              {imageLoading[product._id] && (
+                <div className="flex justify-center items-center h-48">
+                  <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+                </div>
+              )}
               {!imageErrors[product._id] ? (
                 <Image
                   src={product.image || "/placeholder.svg"}
                   alt={product.name}
-                  className="object-contain"
+                  className={`object-contain ${
+                    imageLoading[product._id] ? "hidden" : ""
+                  }`}
                   fill
                   onError={() => handleImageError(product._id)}
+                  onLoadingComplete={() =>
+                    handleImageLoading(product._id, false)
+                  }
+                  onLoad={() => handleImageLoading(product._id, true)}
                 />
               ) : (
                 <Image
@@ -117,17 +133,19 @@ export default function ProductList({ products }: ProductListProps) {
               <input
                 id={`quantity-${product._id}`}
                 type="number"
-                defaultValue={quantities[product._id] || 1}
-                value={quantities[product._id]}
+                defaultValue={1}
                 min={1}
+                step={1}
+                value={quantities[product._id]}
                 className="w-full border rounded px-2 py-1"
-                onChange={(e) =>
-                  handleQuantityChange(
-                    product._id,
-                    parseInt(e.target.value, 10)
-                  )
-                }
+                onChange={(e) => {
+                  const value = Math.min(parseInt(e.target.value, 10), 1000);
+                  handleQuantityChange(product._id, value);
+                }}
               />
+              {quantities[product._id] > 10 && (
+                <p className="text-red-500 ml-2">Max 10 allowed</p>
+              )}
             </div>
             <div className="flex space-x-2">
               <button

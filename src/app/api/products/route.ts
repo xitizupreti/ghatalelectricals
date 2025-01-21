@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { Product } from "@/app/models/Product"
 import { connectDB } from "@/app/lib/db"
+import { revalidatePath } from "next/cache"
 
 export async function POST(request: Request) {
   try {
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
     const newProduct = new Product(productData)
     await newProduct.save()
 
+    revalidatePath("/products")
     return NextResponse.json(newProduct, { status: 201 })
   } catch (error) {
     console.error("POST Error:", error)

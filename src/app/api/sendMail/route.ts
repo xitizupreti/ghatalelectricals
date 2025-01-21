@@ -45,10 +45,10 @@ export async function POST(request: Request) {
           console.log(item.image)
           return `
           <div>
+          <img src="https://ghatalelectricals.vercel.app/${item.image}" alt="${item.name}" style="max-width: 100px;"> 
             <p>Product: ${item.name}</p>
             <p>Quantity: ${item.quantity}</p>
             <p>Price: ${item.price}</p>
-            <img src="https://ghatalelectricals.vercel.app/${item.image}" alt="${item.name}" style="max-width: 100px;"> 
           </div>
         `}
       )
