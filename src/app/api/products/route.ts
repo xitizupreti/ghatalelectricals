@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Name, price, and quantity are required." }, { status: 400 })
     }
 
-    const productData: { name: String; price: number; image: String; quantity: number; category?: string } = {
+    const productData: { name: string; price: number; image: string; quantity: number; category?: string } = {
       name,
       price: Number.parseFloat(price),
       image,
