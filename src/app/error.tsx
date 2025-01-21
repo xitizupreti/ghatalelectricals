@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Error({
   error,
   reset,
 }: {
-  error: any;
+  error: Error;
   reset: () => void;
 }) {
   const [isOnline, setIsOnline] = useState(true);
@@ -45,12 +46,12 @@ export default function Error({
           >
             Try Again
           </button>
-          <a
+          <Link
             href="/"
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-full shadow-md transition-transform transform hover:scale-105"
           >
             Go Back to Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>

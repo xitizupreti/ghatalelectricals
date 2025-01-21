@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     // Calculate total price from the cart
-    const calculateTotal = (cart: any[]) => {
+    const calculateTotal = (cart: { price: number; quantity: number }[]) => {
       return cart.reduce(
         (total, item) => total + (item.price || 0) * item.quantity,
         0

@@ -1,4 +1,4 @@
-// app/not-found.js
+import Link from "next/link";
 
 export default function NotFound() {
   return (
@@ -11,12 +11,12 @@ export default function NotFound() {
         <p className="text-lg text-gray-600 mb-6">
           Sorry, the page you are looking for does not exist.
         </p>
-        <a
+        <Link
           href="/"
           className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-full shadow-md transition-transform transform hover:scale-105"
         >
           Go Back to Home
-        </a>
+        </Link>
       </div>
     </div>
   );

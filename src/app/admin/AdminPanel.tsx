@@ -90,7 +90,7 @@ export default function AdminPanel() {
       });
 
       if (productResponse.ok) {
-        const newProduct = await productResponse.json();
+        await productResponse.json();
         setSuccess("Product added successfully!");
         toast.success("Product added successfully!", {
           position: "top-center",
@@ -126,7 +126,7 @@ export default function AdminPanel() {
           transition: Bounce,
         });
       }
-    } catch (err) {
+    } catch {
       setError("Failed to connect to the server.");
       toast.error("Failed to connect to the server.", {
         position: "top-center",
