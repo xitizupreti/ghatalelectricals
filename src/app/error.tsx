@@ -1,8 +1,6 @@
-// app/error.js
-
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Error({
   error,
@@ -11,8 +9,21 @@ export default function Error({
   error: any;
   reset: () => void;
 }) {
+  const [isOnline, setIsOnline] = useState(true);
+
   useEffect(() => {
     console.error(error);
+
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
   }, [error]);
 
   return (
@@ -23,8 +34,9 @@ export default function Error({
           Internal Server Error
         </h2>
         <p className="text-lg text-gray-600 mb-6">
-          Oops! Something went wrong on our end. Please try again or return to
-          the home page.
+          {isOnline
+            ? "Oops! Something went wrong on our end. Please try again or return to the home page."
+            : "It seems like you're offline. Please check your network connection and try again."}
         </p>
         <div className="flex flex-col sm:flex-row sm:justify-center gap-4">
           <button

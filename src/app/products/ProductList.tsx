@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useCart } from "../cart/CartContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
+const ITEMS_PER_PAGE = 12;
 
 type Product = {
   _id: string;
@@ -18,15 +20,14 @@ interface ProductListProps {
   products: Product[];
 }
 
-const ITEMS_PER_PAGE = 8;
-
 export default function ProductList({ products }: ProductListProps) {
   const { addToCart, cart } = useCart();
   const router = useRouter();
-  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
-  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
-    {}
-  );
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -40,15 +41,17 @@ export default function ProductList({ products }: ProductListProps) {
 
   const handleBuyNow = (product: Product) => {
     setLoading(true);
-    const isInCart = cart.some((item) => item._id === product._id);
-    if (!isInCart) {
+    if (!cart.some((item) => item._id === product._id)) {
       addToCart(product, quantities[product._id] || 1);
     }
     router.push("/cart");
   };
 
   const handleQuantityChange = (productId: string, quantity: number) => {
-    setQuantities((prev) => ({ ...prev, [productId]: quantity }));
+    setQuantities((prev) => ({
+      ...prev,
+      [productId]: Math.max(1, Math.min(quantity, 10)),
+    }));
   };
 
   const handleImageError = (productId: string) => {
@@ -56,24 +59,22 @@ export default function ProductList({ products }: ProductListProps) {
   };
 
   const formatPrice = (price: number | string): string => {
-    if (typeof price === "number") {
-      return price.toFixed(2);
-    }
-    if (typeof price === "string") {
-      const numPrice = Number.parseFloat(price);
-      return isNaN(numPrice) ? price : numPrice.toFixed(2);
-    }
-    return "0.00";
+    const numPrice = typeof price === "string" ? parseFloat(price) : price;
+    return isNaN(numPrice) ? "0.00" : numPrice.toFixed(2);
   };
 
-  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery)
+  );
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const currentItems = filteredProducts.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
-  if (!products || products.length === 0) {
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+
+  if (!products.length) {
     return (
       <p className="text-center mt-4">No products found in this category.</p>
     );
@@ -95,10 +96,10 @@ export default function ProductList({ products }: ProductListProps) {
                 />
               ) : (
                 <Image
-                  src="images/placeholder.png"
+                  src="/images/placeholder.png"
                   alt="Placeholder"
                   fill
-                  className="object-contain w-full h-full"
+                  className="object-contain"
                 />
               )}
             </div>
@@ -116,18 +117,16 @@ export default function ProductList({ products }: ProductListProps) {
               <input
                 id={`quantity-${product._id}`}
                 type="number"
-                defaultValue={1}
+                defaultValue={quantities[product._id] || 1}
+                value={quantities[product._id]}
                 min={1}
-                max={10}
-                value={quantities[product._id] || 1}
                 className="w-full border rounded px-2 py-1"
-                onChange={(e) => {
-                  const value = Math.min(
-                    Number.parseInt(e.target.value, 10),
-                    10
-                  );
-                  handleQuantityChange(product._id, value);
-                }}
+                onChange={(e) =>
+                  handleQuantityChange(
+                    product._id,
+                    parseInt(e.target.value, 10)
+                  )
+                }
               />
             </div>
             <div className="flex space-x-2">
@@ -152,9 +151,11 @@ export default function ProductList({ products }: ProductListProps) {
         {Array.from({ length: totalPages }, (_, i) => (
           <button
             key={i + 1}
-            onClick={() => paginate(i + 1)}
-            className={`px-4 py-2 rounded ${
-              currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+            onClick={() => setCurrentPage(i + 1)}
+            className={`px-4 py-2 rounded transition-colors ${
+              currentPage === i + 1
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 hover:bg-gray-300"
             }`}
           >
             {i + 1}

@@ -23,6 +23,7 @@ type CartContextType = {
   addToCart: (product: Product, quantity: number) => void;
   removeFromCart: (uniqueKey: string) => void;
   clearCart: () => void;
+  clearCartCheckout: () => void;
   updateQuantity: (uniqueKey: string, quantity: number) => void;
 };
 
@@ -114,6 +115,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
     }
   };
+  const clearCartCheckout = () => {
+    setCart([]);
+    localStorage.removeItem("cart");
+  };
 
   const updateQuantity = (uniqueKey: string, quantity: number) => {
     setCart((prevCart) => {
@@ -127,7 +132,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart, updateQuantity }}
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        updateQuantity,
+        clearCartCheckout,
+      }}
     >
       <ToastContainer />
       {children}

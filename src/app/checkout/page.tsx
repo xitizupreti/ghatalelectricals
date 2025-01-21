@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
-  const { cart, clearCart } = useCart();
+  const { cart, clearCartCheckout } = useCart();
   const router = useRouter();
 
   const [data, setData] = useState({
@@ -157,7 +157,7 @@ export default function CheckoutPage() {
             theme: "colored",
             transition: Bounce,
           });
-          clearCart(); // Clear the cart after successful order
+          clearCartCheckout(); // Clear the cart after successful order
           setData({
             fullName: "",
             email: "",

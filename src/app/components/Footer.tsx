@@ -14,7 +14,6 @@ export default function Footer() {
               width={128}
               height={128}
               className="mb-4"
-              layout="intrinsic"
             />
             <p>Kathmandu</p>
             <p>

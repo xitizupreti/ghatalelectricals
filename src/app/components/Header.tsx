@@ -15,6 +15,7 @@ export default function Header() {
     if (searchQuery.trim() !== "") {
       router.push(`/products?search=${searchQuery}`);
       setSearchOpen(false); // Close search bar after submission
+      setSearchQuery(""); // Clear search query after submission
     }
   };
 
@@ -23,7 +24,7 @@ export default function Header() {
       <div className="flex items-center justify-between p-4">
         <div className="logo">
           <Link href="/">
-            <Image src="/images/logo.png" alt="Logo" width={64} height={64} />
+            <Image src="/images/logo.png" alt="Logo" width={85} height={85} />
           </Link>
         </div>
         <button
