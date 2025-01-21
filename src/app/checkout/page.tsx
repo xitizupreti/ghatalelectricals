@@ -2,7 +2,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useCart } from "../cart/CartContext";
 import styles from "./Checkout.module.css";
-import { ToastContainer, toast } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 
@@ -56,29 +56,79 @@ export default function CheckoutPage() {
     if (!data.fullName) {
       newErrors.fullName = "Full Name is required.";
       isValid = false;
-      toast.error("Full Name is required.", { theme: "colored" });
+      toast.error("Full Name is required.", {
+        position: "bottom-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
     }
 
     if (data.email && !validateEmail(data.email)) {
       newErrors.email = "Invalid email format.";
       isValid = false;
-      toast.error("Invalid email format.", { theme: "colored" });
+      toast.error("Invalid email format.", {
+        position: "bottom-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
     }
 
     if (!data.address) {
       newErrors.address = "Shipping Address is required.";
       isValid = false;
-      toast.error("Shipping Address is required.", { theme: "colored" });
+      toast.error("Shipping Address is required.", {
+        position: "bottom-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
     }
 
     if (!data.phone) {
       newErrors.phone = "Phone Number is required.";
       isValid = false;
-      toast.error("Phone Number is required.", { theme: "colored" });
+      toast.error("Phone Number is required.", {
+        position: "bottom-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
     } else if (!validatePhone(data.phone)) {
       newErrors.phone = "Phone Number must be 10 digits.";
       isValid = false;
-      toast.error("Invalid Phone Number.", { theme: "colored" });
+      toast.error("Invalid Phone Number.", {
+        position: "bottom-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
     }
 
     setErrors(newErrors);
@@ -96,7 +146,17 @@ export default function CheckoutPage() {
         });
 
         if (response.ok) {
-          toast.success("Order placed successfully!", { theme: "colored" });
+          toast.success("Order placed successfully!", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
           clearCart(); // Clear the cart after successful order
           setData({
             fullName: "",
@@ -111,13 +171,29 @@ export default function CheckoutPage() {
         } else {
           const error = await response.json();
           toast.error(error.message || "Failed to place order", {
+            position: "bottom-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
             theme: "colored",
+            transition: Bounce,
           });
         }
       } catch (error) {
         console.error("Error submitting form:", error);
         toast.error("Failed to submit order. Please try again later.", {
+          position: "bottom-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
           theme: "colored",
+          transition: Bounce,
         });
       } finally {
         setLoading(false);

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ToastContainer, toast } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
@@ -31,19 +31,43 @@ export default function Login() {
         router.push("/admin");
         setLoading(true);
         toast.success("Succesfull Login!", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
           theme: "colored",
+          transition: Bounce,
         });
       } else {
         setError("Invalid username or password");
         toast.warning("Invalid username or password", {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
           theme: "colored",
+          transition: Bounce,
         });
       }
     } catch (error) {
       console.error("Login error:", error);
       setError("An error occurred during login");
       toast.error("An error occurred during login", {
+        position: "bottom-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
         theme: "colored",
+        transition: Bounce,
       });
     } finally {
       setLoading(false);

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { ToastContainer, toast } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // Define categories
@@ -35,7 +35,17 @@ export default function AdminPanel() {
     date.setDate(date.getDate() + 3); // Set expiration to 3 days from now
     document.cookie = `authToken=; path=/; expires=${date.toUTCString()};`;
     window.location.href = "/login";
-    toast.warning("Logged Out", { theme: "colored" });
+    toast.warning("Logged Out", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,7 +92,17 @@ export default function AdminPanel() {
       if (productResponse.ok) {
         const newProduct = await productResponse.json();
         setSuccess("Product added successfully!");
-        toast.success("Product added successfully!", { theme: "colored" });
+        toast.success("Product added successfully!", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
         setFormData({
           name: "",
           price: "",
@@ -94,12 +114,30 @@ export default function AdminPanel() {
       } else {
         const errorData = await productResponse.json();
         setError(errorData.error || "Failed to add product.");
-        toast.warning("Failed to add product.", { theme: "colored" });
+        toast.warning("Failed to add product.", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
       }
     } catch (err) {
       setError("Failed to connect to the server.");
       toast.error("Failed to connect to the server.", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
         theme: "colored",
+        transition: Bounce,
       });
     } finally {
       setLoading(false);

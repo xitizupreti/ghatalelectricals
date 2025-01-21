@@ -77,7 +77,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeFromCart = (uniqueKey: string) => {
-    toast.error("Removed from the Cart!", {
+    toast.warning("Removed from the Cart!", {
       position: "bottom-right",
       autoClose: 2000,
       hideProgressBar: false,
