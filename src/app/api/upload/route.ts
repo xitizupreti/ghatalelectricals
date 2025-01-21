@@ -6,9 +6,9 @@ import { GridFSBucket } from "mongodb"
 export async function POST(request: Request) {
   try {
     await connectDB()
-    const db = mongoose.connection.db;
+    const db = mongoose.connection.db
     if (!db) {
-      throw new Error("Database connection is not established");
+      throw new Error("Database connection is not established")
     }
     const bucket = new GridFSBucket(db, { bucketName: "images" })
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
     uploadStream.end(buffer)
 
-    return new Promise((resolve, reject) => {
+    return new Promise<Response>((resolve, reject) => {
       uploadStream.on("finish", () => {
         resolve(NextResponse.json({ imageUrl: `/api/images/${fileId}` }, { status: 200 }))
       })
