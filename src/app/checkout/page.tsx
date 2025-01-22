@@ -2,7 +2,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useCart } from "../cart/CartContext";
 import styles from "./Checkout.module.css";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 
@@ -266,7 +266,6 @@ export default function CheckoutPage() {
           <div className="spinner"></div>
         </div>
       )}
-      <ToastContainer />
     </form>
   );
 }

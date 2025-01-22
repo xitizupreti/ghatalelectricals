@@ -19,7 +19,7 @@ async function CategorySection({ category }: { category: string }) {
   return (
     <section>
       <h2 className="text-2xl font-semibold mb-4">{category}</h2>
-      <ProductList products={products} />
+      <ProductList initialProducts={products} category={category} />
     </section>
   );
 }

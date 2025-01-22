@@ -40,14 +40,26 @@ export async function GET(request: Request) {
     await connectDB()
     const { searchParams } = new URL(request.url)
     const category = searchParams.get("category")
+    const search = searchParams.get("search")
 
-    let query = {}
+    const query: { category?: string; name?: { $regex: string; $options: string } } = {}
     if (category) {
-      query = { category }
+      query.category = category
+    }
+    if (search) {
+      query.name = { $regex: search, $options: "i" }
     }
 
     const products = await Product.find(query)
-    return NextResponse.json(products)
+
+    // Set cache control headers to prevent caching
+    return new NextResponse(JSON.stringify(products), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store, max-age=0",
+      },
+    })
   } catch (error) {
     console.error("GET Error:", error)
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 })

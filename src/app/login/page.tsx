@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
@@ -10,11 +9,10 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const router = useRouter();
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const response = await fetch("/api/auth", {
@@ -28,11 +26,9 @@ export default function Login() {
       const data = await response.json();
 
       if (data.success) {
-        router.push("/admin");
-        setLoading(true);
-        toast.success("Succesfull Login!", {
+        toast.success("Successful Login!", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -41,6 +37,12 @@ export default function Login() {
           theme: "colored",
           transition: Bounce,
         });
+
+        // Use setTimeout to ensure the toast is visible before redirecting
+        setTimeout(() => {
+          // Force a hard navigation to /admin
+          window.location.href = "/admin";
+        }, 1000);
       } else {
         setError("Invalid username or password");
         toast.warning("Invalid username or password", {
@@ -109,16 +111,15 @@ export default function Login() {
         <button
           disabled={loading}
           type="submit"
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
+          className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 disabled:bg-indigo-400"
         >
-          {loading ? "Welcome..." : "Login"}
+          {loading ? "Logging in..." : "Login"}
         </button>
         {loading && (
           <div className="loading">
             <div className="spinner"></div>
           </div>
         )}
-        <ToastContainer />
       </form>
     </div>
   );

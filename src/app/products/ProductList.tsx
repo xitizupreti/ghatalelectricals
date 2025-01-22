@@ -17,20 +17,43 @@ type Product = {
 };
 
 interface ProductListProps {
-  products: Product[];
+  initialProducts: Product[];
+  category?: string;
 }
 
-export default function ProductList({ products }: ProductListProps) {
+export default function ProductList({
+  initialProducts,
+  category,
+}: ProductListProps) {
   const { addToCart, cart } = useCart();
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("search")?.toLowerCase() || "";
-
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const [imageLoading, setImageLoading] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const url = category
+          ? `/api/products?category=${encodeURIComponent(category)}`
+          : "/api/products";
+        const response = await fetch(url);
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, [category]);
 
   useEffect(() => {
     const element = document.getElementById("products");
@@ -57,6 +80,7 @@ export default function ProductList({ products }: ProductListProps) {
 
   const handleImageError = (productId: string) => {
     setImageErrors((prev) => ({ ...prev, [productId]: true }));
+    setImageLoading((prev) => ({ ...prev, [productId]: false }));
   };
 
   const handleImageLoading = (productId: string, isLoading: boolean) => {
@@ -64,7 +88,8 @@ export default function ProductList({ products }: ProductListProps) {
   };
 
   const formatPrice = (price: number | string): string => {
-    const numPrice = typeof price === "string" ? parseFloat(price) : price;
+    const numPrice =
+      typeof price === "string" ? Number.parseFloat(price) : price;
     return isNaN(numPrice) ? "0.00" : numPrice.toFixed(2);
   };
 
@@ -100,15 +125,13 @@ export default function ProductList({ products }: ProductListProps) {
                 <Image
                   src={product.image || "/placeholder.svg"}
                   alt={product.name}
-                  className={`object-contain ${
-                    imageLoading[product._id] ? "hidden" : ""
+                  className={`object-contain transition-opacity duration-300 ${
+                    imageLoading[product._id] ? "opacity-0" : "opacity-100"
                   }`}
                   fill
                   onError={() => handleImageError(product._id)}
-                  onLoadingComplete={() =>
-                    handleImageLoading(product._id, false)
-                  }
-                  onLoad={() => handleImageLoading(product._id, true)}
+                  onLoadStart={() => handleImageLoading(product._id, true)}
+                  onLoad={() => handleImageLoading(product._id, false)}
                 />
               ) : (
                 <Image
@@ -130,22 +153,49 @@ export default function ProductList({ products }: ProductListProps) {
               >
                 Quantity
               </label>
-              <input
-                id={`quantity-${product._id}`}
-                type="number"
-                defaultValue={1}
-                min={1}
-                step={1}
-                value={quantities[product._id]}
-                className="w-full border rounded px-2 py-1"
-                onChange={(e) => {
-                  const value = Math.min(parseInt(e.target.value, 10), 1000);
-                  handleQuantityChange(product._id, value);
-                }}
-              />
-              {quantities[product._id] > 10 && (
-                <p className="text-red-500 ml-2">Max 10 allowed</p>
-              )}
+              <div className="flex items-center space-x-2">
+                <button
+                  className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
+                  onClick={() => {
+                    const newQuantity = Math.max(
+                      (quantities[product._id] || 1) - 1,
+                      1
+                    );
+                    handleQuantityChange(product._id, newQuantity);
+                  }}
+                >
+                  -
+                </button>
+                <input
+                  id={`quantity-${product._id}`}
+                  type="text"
+                  placeholder="1"
+                  value={quantities[product._id]}
+                  onChange={(e) => {
+                    const value = Math.min(
+                      Math.max(Number.parseInt(e.target.value || "1", 10), 1),
+                      1000
+                    );
+                    handleQuantityChange(product._id, value);
+                  }}
+                  className="w-20 text-center border rounded px-2 py-1 appearance-none"
+                />
+                <button
+                  className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
+                  onClick={() => {
+                    const newQuantity = Math.min(
+                      (quantities[product._id] || 1) + 1,
+                      1000
+                    );
+                    handleQuantityChange(product._id, newQuantity);
+                  }}
+                >
+                  +
+                </button>{" "}
+                {quantities[product._id] > 10 && (
+                  <p className="text-red-500 ml-2">Max 10 allowed</p>
+                )}
+              </div>
             </div>
             <div className="flex space-x-2">
               <button

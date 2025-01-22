@@ -19,7 +19,7 @@ export default async function ProductsPage() {
           </div>
         }
       >
-        <ProductList products={products} />
+        <ProductList initialProducts={products} />
       </Suspense>
     </section>
   );

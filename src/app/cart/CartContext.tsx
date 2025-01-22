@@ -6,7 +6,7 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 type Product = {
@@ -141,7 +141,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         clearCartCheckout,
       }}
     >
-      <ToastContainer />
       {children}
     </CartContext.Provider>
   );

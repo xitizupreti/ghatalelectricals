@@ -2,6 +2,7 @@ import { CartProvider } from "./cart/CartContext";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import "./globals.css";
+import { ToastContainer } from "react-toastify";
 
 export const metadata = {
   title: "Ghatal Electronics",
@@ -27,6 +28,7 @@ export default function RootLayout({
           <main className="pt-[163px]">{children}</main>
           <Footer />
         </CartProvider>
+        <ToastContainer />
       </body>
     </html>
   );

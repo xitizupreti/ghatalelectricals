@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
 
 // Define categories
 const categories = [
@@ -28,6 +29,7 @@ export default function AdminPanel() {
   const [success, setSuccess] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleLogout = () => {
     setLoading(true);
@@ -111,6 +113,7 @@ export default function AdminPanel() {
           category: "",
         });
         setImagePreview(null);
+        router.refresh();
       } else {
         const errorData = await productResponse.json();
         setError(errorData.error || "Failed to add product.");
@@ -285,7 +288,6 @@ export default function AdminPanel() {
         >
           Log Out
         </button>
-        <ToastContainer />
       </form>
     </div>
   );
