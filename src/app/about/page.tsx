@@ -72,10 +72,10 @@ export default function AboutPage() {
             <li>
               <strong>Email:</strong>{" "}
               <a
-                href="mailto:abc@gmail.com"
+                href="mailto:ghatalelectricals@gmail.com"
                 className="text-blue-600 hover:underline"
               >
-                abc@gmail.com
+                ghatalelectricals@gmail.com
               </a>
             </li>
           </ul>

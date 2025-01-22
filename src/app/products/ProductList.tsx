@@ -83,8 +83,8 @@ export default function ProductList({
     setImageLoading((prev) => ({ ...prev, [productId]: false }));
   };
 
-  const handleImageLoading = (productId: string, isLoading: boolean) => {
-    setImageLoading((prev) => ({ ...prev, [productId]: isLoading }));
+  const handleImageLoaded = (productId: string) => {
+    setImageLoading((prev) => ({ ...prev, [productId]: false }));
   };
 
   const formatPrice = (price: number | string): string => {
@@ -116,24 +116,22 @@ export default function ProductList({
         {currentItems.map((product) => (
           <div key={product._id} className="border p-4 rounded-lg shadow-md">
             <div className="w-full h-48 relative mb-4">
-              {imageLoading[product._id] && (
-                <div className="flex justify-center items-center h-48">
+              {imageLoading[product._id] !== false && (
+                <div className="absolute inset-0 flex justify-center items-center bg-gray-100">
                   <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
                 </div>
               )}
-              {!imageErrors[product._id] ? (
+              {!imageErrors[product._id] && (
                 <Image
                   src={product.image || "/placeholder.svg"}
                   alt={product.name}
-                  className={`object-contain transition-opacity duration-300 ${
-                    imageLoading[product._id] ? "opacity-0" : "opacity-100"
-                  }`}
+                  className="object-contain"
                   fill
                   onError={() => handleImageError(product._id)}
-                  onLoadStart={() => handleImageLoading(product._id, true)}
-                  onLoad={() => handleImageLoading(product._id, false)}
+                  onLoad={() => handleImageLoaded(product._id)}
                 />
-              ) : (
+              )}
+              {imageErrors[product._id] && (
                 <Image
                   src="/images/placeholder.png"
                   alt="Placeholder"
@@ -191,7 +189,7 @@ export default function ProductList({
                   }}
                 >
                   +
-                </button>{" "}
+                </button>
                 {quantities[product._id] > 10 && (
                   <p className="text-red-500 ml-2">Max 10 allowed</p>
                 )}

@@ -1,11 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 
-// Define categories
 const categories = [
   "Lights & Accessories",
   "Power Tools",
@@ -17,26 +16,31 @@ const categories = [
   "Automotive Accessories",
 ];
 
+const initialFormData = {
+  name: "",
+  price: "",
+  image: null as File | null,
+  quantity: 1,
+  category: "",
+};
+
 export default function AdminPanel() {
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    image: null as File | null,
-    quantity: 1,
-    category: "",
-  });
+  const [formData, setFormData] = useState(initialFormData);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingOut, setLoadingOut] = useState(false);
   const router = useRouter();
 
-  const handleLogout = () => {
-    setLoading(true);
+  const handleLogout = useCallback(() => {
+    setLoadingOut(true);
     const date = new Date();
-    date.setDate(date.getDate() + 3); // Set expiration to 3 days from now
+    date.setDate(date.getDate() + 3);
     document.cookie = `authToken=; path=/; expires=${date.toUTCString()};`;
-    window.location.href = "/login";
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 1000);
     toast.warning("Logged Out", {
       position: "top-center",
       autoClose: 2000,
@@ -48,55 +52,85 @@ export default function AdminPanel() {
       theme: "colored",
       transition: Bounce,
     });
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError("");
+      setSuccess("");
 
-    if (!formData.image) {
-      setError("Please select an image");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const imageFormData = new FormData();
-      imageFormData.append("image", formData.image);
-
-      // Upload image
-      const imageUploadResponse = await fetch("/api/upload", {
-        method: "POST",
-        body: imageFormData,
-      });
-
-      if (!imageUploadResponse.ok) {
-        throw new Error("Failed to upload image");
+      if (!formData.image) {
+        setError("Please select an image");
+        return;
       }
 
-      const { imageUrl } = await imageUploadResponse.json();
+      try {
+        setLoading(true);
+        setLoadingOut(true);
+        const imageFormData = new FormData();
+        imageFormData.append("image", formData.image);
 
-      // Create product
-      const productResponse = await fetch(`/api/products`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          price: Number.parseFloat(formData.price),
-          image: imageUrl,
-          quantity: Number.parseInt(formData.quantity.toString(), 10),
-          category: formData.category,
-        }),
-      });
+        const imageUploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: imageFormData,
+        });
 
-      if (productResponse.ok) {
-        await productResponse.json();
-        setSuccess("Product added successfully!");
-        toast.success("Product added successfully!", {
+        if (!imageUploadResponse.ok) {
+          throw new Error("Failed to upload image");
+        }
+
+        const { imageUrl } = await imageUploadResponse.json();
+
+        const productResponse = await fetch(`/api/products`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: formData.name,
+            price: Number.parseFloat(formData.price),
+            image: imageUrl,
+            quantity: Number.parseInt(formData.quantity.toString(), 10),
+            category: formData.category,
+          }),
+        });
+
+        if (productResponse.ok) {
+          await productResponse.json();
+          setSuccess("Product added successfully!");
+          toast.success("Product added successfully!", {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
+          setFormData(initialFormData);
+          setImagePreview(null);
+          router.refresh();
+        } else {
+          const errorData = await productResponse.json();
+          setError(errorData.error || "Failed to add product.");
+          toast.warning("Failed to add product.", {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
+        }
+      } catch {
+        setError("Failed to connect to the server.");
+        toast.error("Failed to connect to the server.", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 5000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -105,55 +139,42 @@ export default function AdminPanel() {
           theme: "colored",
           transition: Bounce,
         });
-        setFormData({
-          name: "",
-          price: "",
-          image: null,
-          quantity: 1,
-          category: "",
-        });
-        setImagePreview(null);
-        router.refresh();
-      } else {
-        const errorData = await productResponse.json();
-        setError(errorData.error || "Failed to add product.");
-        toast.warning("Failed to add product.", {
-          position: "top-center",
-          autoClose: 4000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
+      } finally {
+        setLoading(false);
+        setLoadingOut(false);
       }
-    } catch {
-      setError("Failed to connect to the server.");
-      toast.error("Failed to connect to the server.", {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Bounce,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [formData, router]
+  );
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData((prev) => ({ ...prev, image: file }));
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        setFormData((prev) => ({ ...prev, image: file }));
+        setImagePreview(URL.createObjectURL(file));
+      }
+    },
+    []
+  );
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { id, value } = e.target;
+      setFormData((prev) => ({ ...prev, [id]: value }));
+    },
+    []
+  );
+
+  const categoryOptions = useMemo(
+    () =>
+      categories.map((category) => (
+        <option key={category} value={category}>
+          {category}
+        </option>
+      )),
+    []
+  );
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md space-y-6">
@@ -174,7 +195,7 @@ export default function AdminPanel() {
             type="text"
             id="name"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={handleInputChange}
             className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
           />
@@ -190,9 +211,7 @@ export default function AdminPanel() {
             type="number"
             id="price"
             value={formData.price}
-            onChange={(e) =>
-              setFormData({ ...formData, price: e.target.value })
-            }
+            onChange={handleInputChange}
             className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
             step="0.01"
@@ -208,17 +227,11 @@ export default function AdminPanel() {
           <select
             id="category"
             value={formData.category}
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
+            onChange={handleInputChange}
             className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           >
             <option value="">Select a category</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
+            {categoryOptions}
           </select>
         </div>
         <div>
@@ -258,12 +271,7 @@ export default function AdminPanel() {
             type="number"
             id="quantity"
             value={formData.quantity}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                quantity: Number.parseInt(e.target.value, 10),
-              })
-            }
+            onChange={handleInputChange}
             className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
             min="1"
@@ -276,13 +284,17 @@ export default function AdminPanel() {
         <button
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-          disabled={loading}
+          disabled={loading || loadingOut}
         >
           {loading ? "Adding..." : "Add Product"}
         </button>
-
+        {(loading || loadingOut) && (
+          <div className="loading">
+            <div className="spinner"></div>
+          </div>
+        )}
         <button
-          disabled={loading}
+          disabled={loadingOut || loading}
           onClick={handleLogout}
           className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mt-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
