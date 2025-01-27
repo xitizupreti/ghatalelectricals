@@ -99,7 +99,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const clearCart = () => {
-    if (window.confirm("Want to clear the cart?")) {
+    if (window.confirm("Are you sure you want to clear the cart?")) {
       setCart([]);
       localStorage.removeItem("cart");
       toast.error(`Cart Cleared!`, {
@@ -115,6 +115,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
     }
   };
+
   const clearCartCheckout = () => {
     setCart([]);
     localStorage.removeItem("cart");

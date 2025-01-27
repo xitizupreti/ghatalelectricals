@@ -5,7 +5,7 @@ import Products from "./products/page";
 
 export default function Home() {
   return (
-    <div>
+    <div className="space-y-16 md:space-y-24">
       <Hero />
       <Products />
       <ClientReviews />

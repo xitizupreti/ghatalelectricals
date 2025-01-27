@@ -177,130 +177,143 @@ export default function AdminPanel() {
   );
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md space-y-6">
-      <h3 className="text-2xl font-bold text-center">Add New Product</h3>
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-white py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden">
+        <div className="p-8">
+          <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">
+            Add New Product
+          </h3>
 
-      {error && <p className="text-red-500 text-center">{error}</p>}
-      {success && <p className="text-green-500 text-center">{success}</p>}
+          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+          {success && (
+            <p className="text-green-500 text-center mb-4">{success}</p>
+          )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Product Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="price"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Price
-          </label>
-          <input
-            type="number"
-            id="price"
-            value={formData.price}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-            step="0.01"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="category"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Category
-          </label>
-          <select
-            id="category"
-            value={formData.category}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          >
-            <option value="">Select a category</option>
-            {categoryOptions}
-          </select>
-        </div>
-        <div>
-          <label
-            htmlFor="image"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Image
-          </label>
-          <input
-            type="file"
-            id="image"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-          {imagePreview && (
-            <div className="mt-4 flex justify-center">
-              <Image
-                src={imagePreview || "/placeholder.svg"}
-                alt="Preview"
-                width={200}
-                height={200}
-                className="object-cover rounded-md shadow-sm"
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Product Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                required
               />
             </div>
-          )}
-        </div>
-        <div>
-          <label
-            htmlFor="quantity"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Quantity
-          </label>
-          <input
-            type="number"
-            id="quantity"
-            value={formData.quantity}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-            min="1"
-          />
-        </div>
-        {loading && (
-          <p className="text-yellow-500 mt-2 text-center">Uploading...</p>
-        )}
+            <div>
+              <label
+                htmlFor="price"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Price
+              </label>
+              <input
+                type="number"
+                id="price"
+                value={formData.price}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                required
+                step="0.01"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="category"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Category
+              </label>
+              <select
+                id="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              >
+                <option value="">Select a category</option>
+                {categoryOptions}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="image"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Image
+              </label>
+              <input
+                type="file"
+                id="image"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="mt-1 block w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-md file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-blue-50 file:text-blue-700
+                  hover:file:bg-blue-100"
+              />
+              {imagePreview && (
+                <div className="mt-4 flex justify-center">
+                  <Image
+                    src={imagePreview || "/placeholder.svg"}
+                    alt="Preview"
+                    width={200}
+                    height={200}
+                    className="object-cover rounded-md shadow-sm"
+                  />
+                </div>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="quantity"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Quantity
+              </label>
+              <input
+                type="number"
+                id="quantity"
+                value={formData.quantity}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                required
+                min="1"
+              />
+            </div>
+            {loading && (
+              <p className="text-yellow-500 mt-2 text-center">Uploading...</p>
+            )}
 
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-          disabled={loading || loadingOut}
-        >
-          {loading ? "Adding..." : "Add Product"}
-        </button>
-        {(loading || loadingOut) && (
-          <div className="loading">
-            <div className="spinner"></div>
-          </div>
-        )}
-        <button
-          disabled={loadingOut || loading}
-          onClick={handleLogout}
-          className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mt-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          Log Out
-        </button>
-      </form>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed transition duration-300 ease-in-out transform hover:-translate-y-1"
+              disabled={loading || loadingOut}
+            >
+              {loading ? "Adding..." : "Add Product"}
+            </button>
+            {(loading || loadingOut) && (
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              </div>
+            )}
+            <button
+              disabled={loadingOut || loading}
+              onClick={handleLogout}
+              className="w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 mt-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-300 disabled:cursor-not-allowed transition duration-300 ease-in-out transform hover:-translate-y-1"
+            >
+              Log Out
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

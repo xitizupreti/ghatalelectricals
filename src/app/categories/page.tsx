@@ -8,14 +8,14 @@ export const metadata = {
 
 export default function CategoriesPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">
+    <div className="container mx-auto px-4 py-16">
+      <h1 className="text-4xl font-bold mb-12 text-center text-gray-800">
         Product Categories
       </h1>
       <Suspense
         fallback={
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
           </div>
         }
       >

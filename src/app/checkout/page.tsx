@@ -1,7 +1,6 @@
 "use client";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useCart } from "../cart/CartContext";
-import styles from "./Checkout.module.css";
 import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
@@ -24,6 +23,7 @@ export default function CheckoutPage() {
     phone: "",
   });
   const [loading, setLoading] = useState(false);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setData((prev) => ({
       ...prev,
@@ -204,68 +204,91 @@ export default function CheckoutPage() {
   };
 
   return (
-    <form
-      className={styles.form}
-      onSubmit={handleSubmit}
-      name="shippingForm"
-      autoComplete="off"
-    >
-      <input
-        value={data.fullName}
-        onChange={handleChange}
-        className={styles.input}
-        style={errors.fullName ? { border: "1px solid red" } : {}}
-        type="text"
-        name="fullName"
-        placeholder="Full Name"
-      />
-      <span style={{ color: "red" }}>{errors.fullName}</span>
-      <br />
-      <input
-        value={data.email}
-        onChange={handleChange}
-        className={styles.input}
-        style={errors.email ? { border: "1px solid red" } : {}}
-        type="text"
-        name="email"
-        placeholder="Email Address (optional)"
-      />
-      <span style={{ color: "red" }}>{errors.email}</span>
-      <br />
-      <input
-        value={data.address}
-        onChange={handleChange}
-        className={styles.input}
-        style={errors.address ? { border: "1px solid red" } : {}}
-        type="text"
-        name="address"
-        placeholder="Shipping Address"
-      />
-      <span style={{ color: "red" }}>{errors.address}</span>
-      <br />
-      <input
-        value={data.phone}
-        onChange={handleChange}
-        className={styles.input}
-        style={errors.phone ? { border: "1px solid red" } : {}}
-        type="text"
-        name="phone"
-        placeholder="Phone Number"
-      />
-      <span style={{ color: "red" }}>{errors.phone}</span>
-      <br />
-      <button
-        className={`${styles.submit} ${styles.input}`}
-        type="submit"
-        disabled={loading}
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <form
+        className="bg-white shadow-md rounded-lg p-8 max-w-md w-full space-y-6"
+        onSubmit={handleSubmit}
+        name="shippingForm"
+        autoComplete="off"
       >
-        {loading ? "Sending..." : "Submit"}
-      </button>
-      {loading && (
-        <div className="loading">
-          <div className="spinner"></div>
+        <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-6">
+          Checkout
+        </h2>
+        <div>
+          <input
+            value={data.fullName}
+            onChange={handleChange}
+            className={`w-full px-4 py-3 rounded-md border-2 text-gray-700 focus:outline-none focus:border-green-500 transition-colors ${
+              errors.fullName ? "border-red-500" : "border-gray-300"
+            }`}
+            type="text"
+            name="fullName"
+            placeholder="Full Name"
+          />
+          {errors.fullName && (
+            <p className="mt-1 text-red-500 text-sm">{errors.fullName}</p>
+          )}
         </div>
-      )}
-    </form>
+        <div>
+          <input
+            value={data.email}
+            onChange={handleChange}
+            className={`w-full px-4 py-3 rounded-md border-2 text-gray-700 focus:outline-none focus:border-green-500 transition-colors ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            }`}
+            type="text"
+            name="email"
+            placeholder="Email Address (optional)"
+          />
+          {errors.email && (
+            <p className="mt-1 text-red-500 text-sm">{errors.email}</p>
+          )}
+        </div>
+        <div>
+          <input
+            value={data.address}
+            onChange={handleChange}
+            className={`w-full px-4 py-3 rounded-md border-2 text-gray-700 focus:outline-none focus:border-green-500 transition-colors ${
+              errors.address ? "border-red-500" : "border-gray-300"
+            }`}
+            type="text"
+            name="address"
+            placeholder="Shipping Address"
+          />
+          {errors.address && (
+            <p className="mt-1 text-red-500 text-sm">{errors.address}</p>
+          )}
+        </div>
+        <div>
+          <input
+            value={data.phone}
+            onChange={handleChange}
+            className={`w-full px-4 py-3 rounded-md border-2 text-gray-700 focus:outline-none focus:border-green-500 transition-colors ${
+              errors.phone ? "border-red-500" : "border-gray-300"
+            }`}
+            type="text"
+            name="phone"
+            placeholder="Phone Number"
+          />
+          {errors.phone && (
+            <p className="mt-1 text-red-500 text-sm">{errors.phone}</p>
+          )}
+        </div>
+        <div>
+          <button
+            className="w-full bg-green-500 text-white py-3 px-4 rounded-md font-semibold uppercase tracking-wide transition duration-300 ease-in-out transform hover:bg-green-600 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Place Order"}
+          </button>
+        </div>
+        {loading && (
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+          </div>
+        )}
+      </form>
+    </div>
   );
 }
